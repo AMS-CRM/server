@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema();
+const Schema = mongoose.Schema;
 
-const roleSchema = Schema({
+const packageSchema = new Schema({
     name: {
         type: String,
     },
@@ -12,7 +12,12 @@ const roleSchema = Schema({
     currency: {
         type: String,
         reqiured: true
+    },
+    test: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'tests',
+        required: true
     }
 })
 
-module.exports = rolesSchema = mongoose.model("roles", rolesSchema);
+module.exports = packages = mongoose.model("packages", packageSchema);

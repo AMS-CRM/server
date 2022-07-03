@@ -1,8 +1,98 @@
 const asyncHandler = require('express-async-handler')
 const jwt = require("jsonwebtoken");
- 
+const ObjectId = require('mongodb').ObjectID;
+const { validationResult } = require("express-validator")
+
 // Get the use model
 const User = require("../../models/user.model");
+const Package = require("../../models/packages.model")
+const Subscription = require("../../models/subscriptions.model")
+
+// Utils
+const {checkEnglishTestExists} = require("../../utils/tests");
+
+
+
+const register = asyncHandler(async(req, res) => {
+
+    const user = req.user;
+
+    // Check the validation errors
+    const errors = await validationResult(req);
+    if ( !errors.isEmpty() ) {
+        res.payload = errors.array();
+        res.status(400)
+        throw new Error("Validation error")   
+    }
+
+
+    if ( user.name ) {
+        res.status(400)
+        throw new Error("User is already registered")   
+    }
+
+
+    try {
+
+        const englishTest = await checkEnglishTestExists( req.body.test )
+
+        // Get the free packages
+        const packageCheck = await Package.findOne({
+            name: "Free",
+            test: ObjectId(englishTest._id)
+        }).select("_id")
+
+        if ( !packageCheck ) {
+            res.status(400)
+            throw new Error("You are not eligble for the free plan.")
+        }
+
+        // Start the user subscription
+        const startSubscription = await Subscription.create({
+            user: user.id,
+            package: packageCheck._id,
+            transactions: [{
+                method: "Freemium",
+            }]
+        })
+
+        if ( !startSubscription ) {
+            res.status(400)
+            throw new Error("Error while starting a new Subscription")
+
+        }
+ 
+        // Create the user profile
+        const profile = {
+            name: req.body.name,
+            email: req.body.email,
+        }
+
+        const createProfile = await User.findOneAndUpdate(
+            user.id, 
+            profile, 
+            {new: true});
+
+        if ( !createProfile ) {
+            res.status(400)
+            throw new Error("Cannot create profile, Please contact support")
+        }
+
+        res.status(200).json(createProfile)
+
+    } catch (error) {
+        res.status(400)
+        throw new Error(error)
+    }
+   
+
+
+
+
+
+
+
+})
 
 const login = asyncHandler(async (req, res) => {
 
@@ -90,5 +180,6 @@ const generateToken = (id) => {
 
 module.exports = {
     login,
+    register,
     sendOneTimePassword
 }

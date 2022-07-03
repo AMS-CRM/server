@@ -5,6 +5,15 @@ const editUser = [
 	 body("name").not().isEmpty().withMessage("Name is required").trim().escape()
 ]
 
+/** 
+ * Extend the edit user and add subscription with default plan
+**/
+const register = [
+	...editUser,
+	body("test").not().isEmpty().withMessage("Please choose the test you are taking")
+]
+
 module.exports = {
-	editUser
+	editUser,
+	register
 }
