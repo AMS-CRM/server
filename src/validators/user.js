@@ -9,7 +9,7 @@ const editUser = [
  * Extend the edit user and add subscription with default plan
 **/
 const register = [
-	...editUser,
+	 body("name").not().isEmpty().withMessage("Name is required").trim().escape(),
 	body("test").not().isEmpty().withMessage("Please choose the test you are taking")
 ]
 
