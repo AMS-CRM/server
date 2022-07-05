@@ -111,15 +111,14 @@ const login = asyncHandler(async (req, res) => {
     // Generate the JWT token 
     const phoneNumber = verifyPhoneNumber(phone);
    
-     /*
+     
     const verification = await verifyOneTimePassword(phoneNumber, code);
     
     if (!phoneNumber || verification !== "approved") {
         res.status(400)
         throw new Error("Invalid OTP");
-    }*/
     
- 
+    } 
 
     return res.status(200).json({
       _id: user.id,
@@ -141,12 +140,12 @@ const sendOneTimePassword = asyncHandler(async (req,res) => {
         throw new Error("Please provide a valid phone number")
     }
 
-    return res.status(200).send("success")
-/*
+    //return res.status(200).send("success")
+
     twilioApi().verifications
     .create({to: phoneNumber, channel: 'sms'})
     .then(verification =>  res.status(200).send(verification))
-    .catch(error =>  res.status(400).send(error)); */
+    .catch(error =>  res.status(400).send(error)); 
 })
 
 const verifyPhoneNumber = (phone) => {

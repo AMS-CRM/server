@@ -1,3 +1,6 @@
 {
-	"auth": "/auth/auth.js"
+	"auth": "/auth/auth.js",
+	"tests": "/tests/tests.js",
+	"modules": "/tests/modules.js",
+	"user": "/user/users.js"
 }

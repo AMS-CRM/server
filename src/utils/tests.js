@@ -1,10 +1,24 @@
 const tests = require("../models/tests.model")
+const modules = require("../models/modules.model")
 
 /** 
  * 
  * Util to check if the English test exits
  * 
  * **/
+
+ const getTestList = async () => {
+
+    const testList = await tests.find({}).populate("modules");
+
+    // Return the test list
+    if ( !testList ) {
+        throw new Error("Something went wrong when fetching tests");
+    }
+
+    return testList;
+
+ }
 
  const checkEnglishTestExists = async (test) => {
 
@@ -19,5 +33,6 @@ const tests = require("../models/tests.model")
  }
 
  module.exports = {
- 	checkEnglishTestExists
+ 	checkEnglishTestExists,
+   getTestList
  }
