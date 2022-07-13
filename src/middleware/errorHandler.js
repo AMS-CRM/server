@@ -1,13 +1,20 @@
+const logger = require("./logger.js")
+
 const errorHandler = (err, req, res, next) => {
   const statusCode = res.statusCode ? res.statusCode : 500
 
   res.status(statusCode)
+  res.success = false
+  //logger(req, res, next)
 
-  res.json({
-    message: err.message,
-    error: res.payload || null,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
-  })
+  return res.json({
+        "success": res.success,
+        "code": res.code || 0,
+        "status": statusCode,
+        "error": res.payload || null,
+        "message": err.message,
+        "stack": process.env.NODE_ENV === 'production' ? null : err.stack,
+    }) 
 }
 
 module.exports = {

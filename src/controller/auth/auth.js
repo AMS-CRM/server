@@ -78,7 +78,7 @@ const register = asyncHandler(async(req, res) => {
             throw new Error("Cannot create profile, Please contact support")
         }
 
-        res.status(200).json(createProfile)
+        res.status(200).json({...createProfile._doc, token: req.token})
 
     } catch (error) {
         res.status(400)
