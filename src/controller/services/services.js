@@ -1,11 +1,11 @@
 const asyncHandler = require("express-async-handler" )
+const { validationResult } = require("express-validator") 
 
 // Get the models
 const Services = require("../../models/services.model.js");
-const Roles = require("../../models/Roles.js");
 
 //  Create service
-const createService = asyncHandler(async(res, res) => {
+const createService = asyncHandler(async(req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -28,7 +28,7 @@ const createService = asyncHandler(async(res, res) => {
 
         // Add a new permission to admin 
         await Roles.findOneAndUpdate({name: "Admin"}, { $push: { "permissions": { "service": id, "accessType": "full"}} });
-          return res.status(200).setCode(655).setPayload(newService).respond()
+        return res.status(200).setCode(655).setPayload(newService).respond()
 
     
     } catch (err) {

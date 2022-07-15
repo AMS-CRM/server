@@ -5,12 +5,9 @@ const {  validationResult } = require("express-validator");
 // Get the validators
 const validators = require("../../validators/services");
 // Get the middleware
-const protect = require("../../middleware/authMiddleware.js")
+const {protect} = require("../../middleware/authMiddleware.js")
 // Get the controllers
-const controller = require("../../controller/services/serviecs.js")
-
-
-
+const controller = require("../../controller/services/services.js")
 
 /**
  * 
@@ -40,7 +37,7 @@ router.put("/",protect, validators.editService, controller.editService)
  * @user     Admin
  *
  */
-router.delete("/", protect, validators.deleteService, controll.deleteService)
+router.delete("/", protect, validators.deleteService, controller.deleteService)
 
 
 module.exports = router;

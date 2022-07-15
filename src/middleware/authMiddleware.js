@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
-const User = require('../models/user.model.js')
+const authorization = require("./authorization");
+
+const User = require("../models/user.model.js");
+const Group = require("../models/groups.model.js");
+const Role = require("../models/roles.model.js");
 
 const protect = asyncHandler(async (req, res, next) => {
   let token
@@ -17,10 +21,19 @@ const protect = asyncHandler(async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
       // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password')
+      req.user = await User.findById(decoded.id).select("-password")
+      /*.populate({
+        path: 'groups',
+        populate: {
+            path: 'roles',
+            populate: 'permissions.service'
+        }
+      })*/
       req.token = token;
 
-      next()
+      next() 
+      // return authorization(req, res, next);
+
     } catch (error) {
       console.log(error)
       res.status(401)

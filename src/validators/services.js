@@ -1,4 +1,5 @@
-const { body } = require("express-validator");
+const ServicesModel = require("../models/services.model.js");
+const { check, body } = require("express-validator");
 
 const createService = [
     check("name", "Please provide the service name").not().isEmpty(),
@@ -64,5 +65,8 @@ const ServicesExitsById = async (services) => {
  }
  module.exports = {
     ServicesExitsById,
-    ServiceExitByName
+    ServiceExitByName,
+    createService,
+    editService,
+    deleteService
 }

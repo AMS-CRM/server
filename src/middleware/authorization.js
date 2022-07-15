@@ -6,7 +6,7 @@
 ***/
 
 const _ = require("lodash");
-const Users = require("../models/Users.js")
+const Users = require("../models/user.model.js")
 const asyncHandler = require("express-async-handler");
 const { Error } = require("mongoose");
 
