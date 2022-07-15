@@ -25,8 +25,8 @@ const logger = async (req, res, next) => {
             success: success,
             status: statusCode ||  null,
             token: token || null,
-            code: res.code || 0,
-            user: mongoose.Types.ObjectId(user._id),
+            code: code || 0,
+            user: (req.user) ? mongoose.Types.ObjectId(req.user.id) : null, // Case user just trying to login
             payload: res.payload || null,
             error: res.errors || null
         }

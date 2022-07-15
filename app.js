@@ -15,9 +15,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 app.use(logger)
-app.response.sendStatus = responseHandler
+app.response.respond = responseHandler
 
-// Build custom express properties using funcion
+// Build custom express properties using functions
 const customePropertyGenerator = (propNm, varNm, app) => {
 	app.response[propNm] = function(propVal) {
 		this[varNm] = propVal;

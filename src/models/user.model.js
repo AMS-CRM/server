@@ -33,6 +33,10 @@ const userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "subscriptions",
         required: false
+    }],
+    groups: [{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "Groups"
     }]
 })
 

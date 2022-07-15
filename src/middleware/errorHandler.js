@@ -12,7 +12,7 @@ const errorHandler = (err, req, res, next) => {
         "code": res.code || 0,
         "status": statusCode,
         "error": res.payload || null,
-        "message": err.message,
+        "message": err.message || "Something went wrong, please contact support.",
         "stack": process.env.NODE_ENV === 'production' ? null : err.stack,
     }) 
 }

@@ -21,13 +21,13 @@ const register = asyncHandler(async(req, res) => {
     const errors = await validationResult(req);
     if ( !errors.isEmpty() ) {
         res.payload = errors.array();
-        res.status(400)
+        res.status(400).setCode(454)
         throw new Error("Validation error")   
     }
 
 
     if ( user.name ) {
-        res.status(400)
+        res.status(400).setCode(433)
         throw new Error("User is already registered")   
     }
 
@@ -43,7 +43,7 @@ const register = asyncHandler(async(req, res) => {
         }).select("_id")
 
         if ( !packageCheck ) {
-            res.status(400)
+            res.status(400).setCode(453)
             throw new Error("You are not eligble for the free plan.")
         }
 
@@ -57,7 +57,7 @@ const register = asyncHandler(async(req, res) => {
         })
 
         if ( !startSubscription ) {
-            res.status(400)
+            res.status(400).setCode(422)
             throw new Error("Error while starting a new Subscription")
 
         }
@@ -74,14 +74,16 @@ const register = asyncHandler(async(req, res) => {
             {new: true});
 
         if ( !createProfile ) {
-            res.status(400)
+            res.status(400).setCode(344)
             throw new Error("Cannot create profile, Please contact support")
         }
 
-        res.status(200).json({...createProfile._doc, token: req.token})
+        res.status(200)
+        .setCode(234)
+        .setPayload({...createProfile._doc, token: req.token}).respond()
 
     } catch (error) {
-        res.status(400)
+        res.status(400).setCode(235)
         throw new Error(error)
     }
    
@@ -120,12 +122,12 @@ const login = asyncHandler(async (req, res) => {
     
     } 
 
-    return res.status(200).json({
+    return res.status(200).setCode(235).setPayload({
       _id: user.id,
       name: user.name || null,
       email: user.email || null,
       token: generateToken(user._id)
-    });
+    }).respond();
 
 });
 

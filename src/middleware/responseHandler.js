@@ -2,11 +2,22 @@
 const uuid = require("uuid");
 const mongoose = require("mongoose");
 const logger = require("./logger.js");
-
+/**
+ * 
+ * @param {}  
+ * @returns Json response 
+ * @Desc This reponse handler required code
+ * 
+ */
 function responseHandler(data) {
 
     // Get the resonse status
     const status = this.statusCode || 200
+
+    if ( !this.code ) {
+        this.code(3445)
+        throw new Error("Internal error occured, Please contact support.");
+    }
 
      try {
 
