@@ -4,7 +4,7 @@ const packages = require("../models/packages.model")
 const test =  require("../models/tests.model") 
 const modules = require("../models/modules.model") 
 
-// Get the student package
+// Get the current user package
 const userPackage = async (userId) => {
 
 	try {
@@ -23,7 +23,7 @@ const userPackage = async (userId) => {
 
 
 		if ( !package ) {
-			throw new Error("Student does not have any plans");
+			throw new Error("Student does not have any packages");
 		}
 
 		return package;
@@ -32,6 +32,12 @@ const userPackage = async (userId) => {
 
 		throw new Error(error)
 	}
+}
+
+// Get all the available packages 
+const getPackages = async (test) => {
+
+
 
 }
 

@@ -22,22 +22,20 @@ const protect = asyncHandler(async (req, res, next) => {
 
       // Get user from the token
       req.user = await User.findById(decoded.id).select("-password")
-      /*.populate({
-        path: 'groups',
+     /*.populate({
+        path: 'group',
         populate: {
             path: 'roles',
             populate: 'permissions.service'
         }
       })*/
       req.token = token;
-
       next() 
-      // return authorization(req, res, next);
+      //return authorization(req, res, next);
 
     } catch (error) {
-      console.log(error)
       res.status(401)
-      throw new Error('Not authorized')
+      throw new Error(error)
     }
   }
 

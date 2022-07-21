@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler" )
 const { validationResult } = require("express-validator") 
+const { newAdminRole, addRoleToGroup } = require("../../utils/defaultAdminRole")
 
 // Get the models
 const Services = require("../../models/services.model.js");
@@ -23,8 +24,11 @@ const createService = asyncHandler(async(req, res) => {
             type: req.body.type
         });
 
-        const newService = await service.save(service);
+        const newService = await Services.create(service);
         const id = newService._id;
+        const addAdminRole = await newAdminRole(id, newService.name);
+        const addRoleToAdminGroup = await addRoleToGroup("Admin", [addAdminRole._id]);
+
 
         // Add a new permission to admin 
         await Roles.findOneAndUpdate({name: "Admin"}, { $push: { "permissions": { "service": id, "accessType": "full"}} });

@@ -7,7 +7,7 @@ const testList = asyncHandler(async (req, res) => {
 	try {
 
 		const getList = await testUtils.getTestList();
-		res.status(200).setCode(45).setPayload(getList)
+		res.status(200).setCode(45).setPayload(getList).respond()
 
 	} catch(error) {
 		res.status(500).setCode(45)

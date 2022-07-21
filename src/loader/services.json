@@ -3,5 +3,8 @@
 	"tests": "/tests/tests.js",
 	"modules": "/tests/modules.js",
 	"user": "/user/users.js",
-	"services": "/services/services.js"
+	"services": "/services/services.js",
+	"roles": "/user/roles.js",
+	"groups": "/user/groups.js",
+	"orders": "/billing/orders.js"
 }

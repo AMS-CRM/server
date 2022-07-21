@@ -7,15 +7,13 @@ const modules = require("../models/modules.model")
  * 
  * **/
 
- const getTestList = async () => {
+ const getTestList = async (test = "") => {
 
-    const testList = await tests.find({}).populate("modules");
-
+    const testList = await tests.find({name: /.*ser.*/}).populate("modules");
     // Return the test list
     if ( !testList ) {
-        throw new Error("Something went wrong when fetching tests");
+        throw new Error("No test was found");
     }
-
     return testList;
 
  }

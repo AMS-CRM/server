@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 RolesSchema = new mongoose.Schema({
-
     name: {
         type: String,
     },
@@ -11,7 +10,7 @@ RolesSchema = new mongoose.Schema({
             required: true,
             ref: 'Services' 
         },
-        accessType: {
+        access: {
             type: String, 
             required: true
         }

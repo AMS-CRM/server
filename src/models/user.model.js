@@ -34,10 +34,10 @@ const userSchema = new Schema({
         ref: "subscriptions",
         required: false
     }],
-    groups: [{
+    group: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "Groups"
-    }]
+        ref: "groups"
+    }
 })
 
 module.exports = user = mongoose.model("user", userSchema);

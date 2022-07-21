@@ -29,12 +29,12 @@ const ServiceExitByName = async (name, status) => {
 
         // If we don't want service to exits in the database
         if ( status && service.length != 0 ) {
-            return Promise.reject('Service already exits in the database.');
+            throw new Error('Service already exits in the database.');
         } 
         
         // If we want service to exit in database
         if ( !status && service.length == 0 ) {
-            return Promise.reject('Service does not exits in the database');
+            throw new Error('Service does not exits in the database');
         }
 
     } catch (err) {
@@ -52,7 +52,7 @@ const ServicesExitsById = async (services) => {
         
         // Compare the array 
         if ( ServicesModel.length !== getServices ) {
-            return Promise.reject('Services does not exits in database');
+            throw new Error('Services does not exits in database');
         }
 
     } catch (err) {
