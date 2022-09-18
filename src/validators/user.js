@@ -10,7 +10,7 @@ const editUser = [
 **/
 const register = [
 	 body("name").not().isEmpty().withMessage("Name is required").trim().escape(),
-	body("test").not().isEmpty().withMessage("Please choose the test you are taking")
+	body("test").not().isEmpty().withMessage("Please choose the test you are taking"),
 ]
 
 module.exports = {
