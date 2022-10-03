@@ -16,19 +16,18 @@ const protect = asyncHandler(async (req, res, next) => {
     try {
       // Get token from header
       token = req.headers.authorization.split(' ')[1]
-
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
       // Get user from the token
       req.user = await User.findById(decoded.id).select("-password")
-     /*.populate({
-        path: 'group',
-        populate: {
-            path: 'roles',
-            populate: 'permissions.service'
-        }
-      })*/
+       
+      
+      if ( !req.user ) {
+        res.status(400).setCode(540)
+        throw new Error("Invalid token")
+      }
+
       req.token = token;
       next() 
       //return authorization(req, res, next);

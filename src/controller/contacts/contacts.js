@@ -16,22 +16,30 @@ const createContact = asyncHandler(async (req, res) => {
         throw new Error("Validation error")   
     }
 
-    const { name, email  } = req.body;
+    const { name, email, phone, address  } = req.body;
     const user = req.user._id
 
     try {
 
         // Check if the contact already exits
-        const checkContact = await contacts.findOne({email: email});
-
+        const checkContact = await contacts.findOne({
+            $or: [{
+                "email": email,
+             }, {
+                "phone": phone
+             }]
+        });
+=
         if ( checkContact ) {
              res.status(400).setCode(543)
-             throw new Error("Contact with the same email already exists")
+             throw new Error("Contact already exists with same phone or email")
         }
 
         const contact =  await contacts.create({
             name, 
             email,
+            address, 
+            phone,
             user
         });
         

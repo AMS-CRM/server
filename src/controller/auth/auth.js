@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const jwt = require("jsonwebtoken");
 const ObjectId = require('mongodb').ObjectID;
+const bcrypt = require("bcrypt");
 const { validationResult } = require("express-validator")
 
 // Get the use model
@@ -11,9 +12,78 @@ const Subscription = require("../../models/subscriptions.model")
 // Utils
 const {checkEnglishTestExists} = require("../../utils/tests");
 
+const login = asyncHandler(async(req,res) => {
 
+     // Check the validation errors
+     const errors = await validationResult(req);
+     if ( !errors.isEmpty() ) {
+         res.payload = errors.array();
+         res.status(400).setCode(454)
+         throw new Error("Validation error")   
+     }
+
+    const { email, password } = req.body
+
+    // Check for user email
+    const user = await User.findOne({ email })
+  
+    if (user && (await bcrypt.compare(password, user.password))) {
+      res.setCode(233).setPayload({
+        _id: user.id,
+        email: user.email,
+        token: generateToken(user._id),
+      }).respond();
+    
+    } else {
+      res.status(400).setCode(766)
+      throw new Error('Invalid credentials')
+    }
+})
 
 const register = asyncHandler(async(req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty(errors)) {
+        res.status(400).setCode(345).setPayload(errors.array())
+        throw new Error("Validation error");
+    }
+
+    const { email, password } = req.body;
+
+    try {
+
+        // Check if the user already exists in the database
+        const checkUser = await User.findOne({email});
+
+        if ( checkUser ) {
+            res.status(400).setCode(343)
+            throw new Error("Uesr with same email address already exists");
+        }
+
+         // Get the hashed password 
+         const hashedPassword = await hashPassword(password);
+        // Add the user to the database
+        const user = await User.create({email, password: hashedPassword});
+
+        if ( !user ) {
+            res.status(400).setCode(434)
+            throw new Error("Something went wrong while creating a new user");
+        }
+
+       return res.status(200).setCode(300).setPayload({
+            _id: user.id,
+            email: user.email,
+            token: generateToken(user._id),
+       }).respond()
+
+    } catch(error) {
+        res.status(400).setCode(743)
+        throw new Error(error)
+    }
+
+})
+
+const phoneRegister = asyncHandler(async(req, res) => {
 
     const user = req.user;
 
@@ -86,17 +156,10 @@ const register = asyncHandler(async(req, res) => {
         res.status(400).setCode(235)
         throw new Error(error)
     }
-   
-
-
-
-
-
-
 
 })
 
-const login = asyncHandler(async (req, res) => {
+const phoneLogin = asyncHandler(async (req, res) => {
 
   // Get the login code 
    const { phone, code } = req.body;
@@ -165,6 +228,11 @@ const verifyOneTimePassword = (to, code) =>  {
 }
     
 
+const hashPassword = async (password, saltRounds=10) => {
+    const salt = await bcrypt.genSalt(saltRounds)
+    return await bcrypt.hash(password, salt);
+}
+
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn: '30d',
@@ -182,5 +250,7 @@ const generateToken = (id) => {
 module.exports = {
     login,
     register,
+    phoneRegister,
+    phoneLogin,
     sendOneTimePassword
 }

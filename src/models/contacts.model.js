@@ -18,6 +18,14 @@ const contactSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
     },
+    phone: {
+        type: Number,
+        required: false
+    },
+    address: {
+        type: String,
+        required: false
+    },
     createdOn: {
         type: Date, 
         default: new Date(),

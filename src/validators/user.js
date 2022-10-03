@@ -13,7 +13,13 @@ const register = [
 	body("test").not().isEmpty().withMessage("Please choose the test you are taking"),
 ]
 
+const credentials = [
+	body('email').isEmail().withMessage("Pleaes provide a valid email addresss"),
+	body("password").not().isEmpty().withMessage("Please choose the test you are taking"),
+]
+
 module.exports = {
 	editUser,
-	register
+	register,
+	credentials
 }
