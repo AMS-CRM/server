@@ -29,7 +29,7 @@ const createContact = asyncHandler(async (req, res) => {
                 "phone": phone
              }]
         });
-=
+
         if ( checkContact ) {
              res.status(400).setCode(543)
              throw new Error("Contact already exists with same phone or email")
