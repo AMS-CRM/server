@@ -32,7 +32,7 @@ router.post("/", protect, validators.createContact, createContact);
  * @User     Any
  * 
  */
- router.get("/", protect, getContacts);
+ router.get("/:page?/:search?/:keyword?", protect, getContacts);
 
 
  /**

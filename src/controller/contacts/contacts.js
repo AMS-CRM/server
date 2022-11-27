@@ -62,18 +62,31 @@ const createContact = asyncHandler(async (req, res) => {
 const getContacts = asyncHandler(async(req, res) => {
 
     const user = req.user._id;
+    const { page, search, keyword } = req.params;
+
+    const PAGE_LIMIT =  ( process.env.PAGE_LIMIT || 10 )
+    const STARTIN_POINT = ( !parseInt(page) ) ? 0 : (page * PAGE_LIMIT) - PAGE_LIMIT;
+    const query = ( search && keyword ) ? {[search]: new RegExp(`.*${keyword}.*`)} : {}
 
     try {
   
         // Get the list of all contacts from a particular user
-        const getContacts = await contacts.find({ user: user });
-        
+        const getContacts = await contacts.find({ user: user, ...query })
+        .skip(STARTIN_POINT)
+        .limit(PAGE_LIMIT);
+
+        // Get the total count of the all contacts 
+        const count = await contacts.count({ user: user, ...query})
+
         // Return error if no contact found under the user
         if ( getContacts.length === 0 ) {
             throw new Error("No contact found for the user")
         }
 
-        return res.status(200).setCode(454).setPayload(getContacts).respond()
+        return res.status(200).setCode(454).setPayload({
+            contacts: getContacts,
+            count: count
+        }).respond()
 
     } catch ( err ) {
         res.status(400).setCode(439)
