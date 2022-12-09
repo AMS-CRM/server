@@ -2,9 +2,17 @@ const mongoose = require("mongoose");
 const Schema =  mongoose.Schema;
 
 const contactSchema = new Schema({
-    name: {
+    firstName: {
         type: String,
         required: true
+    },
+    lastName: {
+        type: String,
+        required: true,
+    },
+    middleName: {
+        type: String,
+        required: false
     },
     email: {
         type: String,
@@ -18,13 +26,42 @@ const contactSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
     },
+    dateOfbirth: {
+        type: Date, 
+        required: true,
+    },
+    passport: {
+        type: String,
+        required: true, 
+    },
+    nationality: {
+        type: String,
+        required: true
+    },
     phone: {
-        type: Number,
-        required: false
+       number: {
+            type: Number,
+            required: true
+       },
+       country: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "countries",
+            required: true
+       }
     },
     address: {
-        type: String,
-        required: false
+        address: {
+            type: String
+        },
+        city: {
+            type: String
+        },
+        state: {
+            type: String
+        },
+        postalCode: {
+            type: String
+        }
     },
     createdOn: {
         type: Date, 

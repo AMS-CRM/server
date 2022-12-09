@@ -7,5 +7,6 @@
 	"roles": "/user/roles.js",
 	"groups": "/user/groups.js",
 	"orders": "/billing/orders.js",
-	"contacts": "/contacts/contacts.js"
+	"contacts": "/contacts/contacts.js",
+	"countries": "/countries/countries.js"
 }
