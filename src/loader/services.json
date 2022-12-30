@@ -8,5 +8,6 @@
 	"groups": "/user/groups.js",
 	"orders": "/billing/orders.js",
 	"contacts": "/contacts/contacts.js",
-	"countries": "/countries/countries.js"
+	"countries": "/countries/countries.js",
+	"organizations": "/organizations/index.js"
 }
