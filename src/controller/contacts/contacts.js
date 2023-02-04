@@ -16,8 +16,31 @@ const createContact = asyncHandler(async (req, res) => {
         throw new Error("Validation error")   
     }
 
-    const { name, email, phone, address  } = req.body;
+    const { firstName, middleName, lastName, email, dob, passport, dial_code, phone, nationality, address, state, city, postalCode  } = req.body;
     const user = req.user._id
+
+    const data = {
+        firstName, 
+        middleName,
+        lastName,
+        email,
+        nationality,
+        dob, 
+        passport, 
+        phone: {
+            number: phone,
+            country: dial_code
+        },
+        address: {
+            address,
+            city,
+            state,
+            postalCode
+        },
+        user
+
+    }
+    
 
     try {
 
@@ -27,7 +50,8 @@ const createContact = asyncHandler(async (req, res) => {
                 "email": email,
              }, {
                 "phone": phone
-             }]
+             },
+           ]
         });
 
         if ( checkContact ) {
@@ -35,13 +59,7 @@ const createContact = asyncHandler(async (req, res) => {
              throw new Error("Contact already exists with same phone or email")
         }
 
-        const contact =  await contacts.create({
-            name, 
-            email,
-            address, 
-            phone,
-            user
-        });
+        const contact =  await contacts.create(data);
         
         if ( !contact ) {
             throw new Error("Error while creating a new contact")
@@ -105,11 +123,11 @@ const deleteContact = asyncHandler(async ( req, res ) => {
     }
 
     const user = req.user._id;
-    const { email } = req.body;
+    const { _id } = req.body;
 
     try {
 
-        const deleteContactForUser = await contacts.remove({ user, email });
+        const deleteContactForUser = await contacts.remove({ user, _id });
 
         if ( deleteContactForUser.deletedCount == 0 || !deleteContactForUser ) {
             res.status(400).setCode(445)

@@ -26,7 +26,7 @@ const contactSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user"
     },
-    dateOfbirth: {
+    dob: {
         type: Date, 
         required: true,
     },
@@ -44,8 +44,7 @@ const contactSchema = new Schema({
             required: true
        },
        country: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "countries",
+            type: String,
             required: true
        }
     },
