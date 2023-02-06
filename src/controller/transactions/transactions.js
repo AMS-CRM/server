@@ -5,6 +5,35 @@ const { UserRolesContext } = require("twilio/lib/rest/flexApi/v1/userRoles");
 const Transaction = require("../../models/transaction.model");
 const User = require("../../models/user.model");
 const credit = require("../../utils/accountBalance.js");
+const pushNotification = require("../../utils/pushNotification");
+
+// List the user transactions
+const listTransactions = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id;
+    // Get the list of transfers
+    const transactions = await Transaction.find({
+      $or: [{ to: userId }, { from: userId }],
+    })
+      .populate({
+        path: "to",
+        select: ["email", "name"],
+      })
+      .populate({
+        path: "from",
+        select: ["name", "email"],
+      });
+
+    if (!transactions) {
+      res.status(400).setCode(354);
+      throw new Error("User does not have any trasactions");
+    }
+
+    return res.status(200).setCode(684).setPayload(transactions).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 // Create a new transaction within the platform
 const create = asyncHandler(async (req, res) => {
@@ -33,7 +62,15 @@ const create = asyncHandler(async (req, res) => {
     }
 
     // Check if the fund receiver exists
-    const receiver = await User.findOne({ email: to }, { _id: 1, balance });
+    const receiver = await User.findOne(
+      { email: to },
+      {
+        _id: 1,
+        balance: 1,
+        pushNotificationToken: 1,
+        allowedPushNotifications: 1,
+      }
+    );
 
     if (!receiver) {
       throw new Error("Cannot initate transfer for the email provided");
@@ -71,6 +108,9 @@ const create = asyncHandler(async (req, res) => {
       { balance: receiverCredit }
     );
 
+    // Send a notification to user
+    receiver.allowedPushNotifications &&
+      pushNotification(receiver.pushNotificationToken);
     return res.setCode(433).setPayload({ balance }).respond();
   } catch (error) {
     throw new Error(error);
@@ -79,4 +119,5 @@ const create = asyncHandler(async (req, res) => {
 
 module.exports = {
   create,
+  listTransactions,
 };

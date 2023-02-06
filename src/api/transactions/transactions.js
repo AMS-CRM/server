@@ -6,9 +6,17 @@ const { protect } = require("../../middleware/authMiddleware");
 
 /**
  *
+ * @API      /trasactions/list
+ * @Desc    Get the list of all transactions for a user
+ * @access  PRIVATE
+ */
+router.get("/list", protect, controller.listTransactions);
+
+/**
+ *
  * @API     /transactions/create
  * @Desc    Initate a new transaction
- * @access  PRIVATTE
+ * @access  PRIVATE
  *
  */
 router.post("/create", protect, validator.create, controller.create);
