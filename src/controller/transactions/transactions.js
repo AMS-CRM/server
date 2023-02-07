@@ -7,6 +7,48 @@ const User = require("../../models/user.model");
 const credit = require("../../utils/accountBalance.js");
 const pushNotification = require("../../utils/pushNotification");
 
+// Get a single transaction
+const getTransaction = asyncHandler(async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).setPayload(errors).setCode(783);
+      throw new Error("Validation Error");
+    }
+
+    const { transferId } = req.params;
+    const { userId } = req.user;
+
+    const transaction = await Transaction.findOne({
+      _id: mongoose.Types.ObjectId(transferId),
+      $or: [
+        {
+          $to: userId,
+        },
+        { $from: userId },
+      ],
+    }).populate([
+      {
+        path: "to",
+        select: ["name", "email"],
+      },
+      {
+        path: "from",
+        select: ["name", "email"],
+      },
+    ]);
+
+    if (!transaction) {
+      throw new Error("Cannot find the transaction");
+    }
+
+    return res.status(200).setCode(475).setPayload(transaction).respond();
+    ``;
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // List the user transactions
 const listTransactions = asyncHandler(async (req, res) => {
   try {
@@ -69,6 +111,7 @@ const create = asyncHandler(async (req, res) => {
         balance: 1,
         pushNotificationToken: 1,
         allowedPushNotifications: 1,
+        lifeTimeEarnings: 1,
       }
     );
 
@@ -102,15 +145,16 @@ const create = asyncHandler(async (req, res) => {
     );
 
     const receiverCredit = receiver.balance + amount;
+    const lifeTimeEarnings = receiver.lifeTimeEarnings + amount;
 
     const receiverBalance = await User.findOneAndUpdate(
       { _id: receiver._id },
-      { balance: receiverCredit }
+      { balance: receiverCredit, lifeTimeEarnings }
     );
 
     // Send a notification to user
-    receiver.allowedPushNotifications &&
-      pushNotification(receiver.pushNotificationToken);
+    //receiver.allowedPushNotifications &&
+    //pushNotification(receiver.pushNotificationToken);
     return res.setCode(433).setPayload({ balance }).respond();
   } catch (error) {
     throw new Error(error);
@@ -120,4 +164,5 @@ const create = asyncHandler(async (req, res) => {
 module.exports = {
   create,
   listTransactions,
+  getTransaction,
 };

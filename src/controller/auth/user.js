@@ -2,9 +2,35 @@ const express = require("express");
 const router = express.Router();
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
+const { findOne } = require("../../models/user.model");
 
 // Get the models
 const User = require("../../models/user.model");
+
+// Get user balance balance
+const getUserBalance = asyncHandler(async (req, res) => {
+  try {
+    const user = req.user._id;
+    const balance = await User.findOne(
+      {
+        _id: user,
+      },
+      {
+        _id: 0,
+        balance: 1,
+        lifeTimeEarnings: 1,
+      }
+    );
+
+    if (!balance) {
+      throw new Error("Cannot get the user balance");
+    }
+
+    return res.status(200).setCode(485).setPayload(balance).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 // Get the user details
 const getUser = asyncHandler(async (req, res) => {
@@ -125,6 +151,7 @@ module.exports = {
   getUser,
   editUser,
   listUsers,
+  getUserBalance,
   updatePushNotificationStatus,
   updatePushNotificationToken,
 };

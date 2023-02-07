@@ -1,4 +1,18 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
+const mongoose = require("mongoose");
+
+// Validtor for a single transaction
+const transaction = [
+  param("transferId")
+    .exists()
+    .withMessage("Transfer ID is not valid")
+    .custom((transferId) => {
+      if (!mongoose.Types.ObjectId.isValid(transferId)) {
+        throw new Error("Transfers Id is not valid");
+      }
+      return true;
+    }),
+];
 
 // Validator for creating a transaction
 const create = [
@@ -21,4 +35,5 @@ const create = [
 
 module.exports = {
   create,
+  transaction,
 };

@@ -40,6 +40,11 @@ const userSchema = new Schema({
     default: 0,
     required: true,
   },
+  lifeTimeEarnings: {
+    type: Number,
+    default: 0,
+    required: false,
+  },
   package: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "packages",

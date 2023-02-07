@@ -7,6 +7,15 @@ const validator = require("../../validators/user");
 //router.get("/package", protect, controller.getPackage);
 
 /**
+ *
+ * @API     /user/balance
+ * @Desc    Get the user total balance
+ * @Access  PRIVATE
+ *
+ */
+router.get("/balance", protect, controller.getUserBalance);
+
+/**
  * @API     /user/list
  * @Desc    Get the list of all users
  * @Access  admins PRIVATE
