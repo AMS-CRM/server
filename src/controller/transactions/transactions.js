@@ -153,8 +153,8 @@ const create = asyncHandler(async (req, res) => {
     );
 
     // Send a notification to user
-    //receiver.allowedPushNotifications &&
-    //pushNotification(receiver.pushNotificationToken);
+    receiver.allowedPushNotifications &&
+      pushNotification(receiver.pushNotificationToken);
     return res.setCode(433).setPayload({ balance }).respond();
   } catch (error) {
     throw new Error(error);
