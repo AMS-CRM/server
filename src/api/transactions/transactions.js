@@ -6,6 +6,14 @@ const { protect } = require("../../middleware/authMiddleware");
 
 /**
  *
+ * @API      /trasactions/list
+ * @Desc    Get the list of all transactions for a user
+ * @access  PRIVATE
+ */
+router.get("/list", protect, controller.listTransactions);
+
+/**
+ *
  * @API     /transactions/get/:id
  * @Desc    List a single transaction
  * @Access  Private
@@ -17,14 +25,6 @@ router.get(
   validator.transaction,
   controller.getTransaction
 );
-
-/**
- *
- * @API      /trasactions/list
- * @Desc    Get the list of all transactions for a user
- * @access  PRIVATE
- */
-router.get("/list", protect, controller.listTransactions);
 
 /**
  *
