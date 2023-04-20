@@ -6,6 +6,15 @@ const { protect } = require("../../middleware/authMiddleware");
 
 /**
  *
+ * @API   /transaction/etransfer
+ * @Desc  Allow user to create e transfer request
+ * @access PRIVATE
+ *
+ */
+router.post("/etransfer", protect, validator.etransfer, controller.etransfer);
+
+/**
+ *
  * @API      /trasactions/list
  * @Desc    Get the list of all transactions for a user
  * @access  PRIVATE

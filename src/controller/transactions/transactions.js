@@ -5,7 +5,98 @@ const { UserRolesContext } = require("twilio/lib/rest/flexApi/v1/userRoles");
 const Transaction = require("../../models/transaction.model");
 const User = require("../../models/user.model");
 const credit = require("../../utils/accountBalance.js");
-const pushNotification = require("../../utils/pushNotification");
+const {
+  pushNotification,
+  emailNotifications,
+} = require("../../utils/notifications");
+
+// E-transager
+const etransfer = asyncHandler(async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).setPayload(errors.array()).setCode(748);
+      throw new Error("Validation erro");
+    }
+
+    // Get the user data
+    const { _id: user, name, email: senderEmail } = req.user;
+    // Get the req data
+    const { to, securityQuestion, securityAnswer } = req.body;
+    const amount = parseInt(req.body.amount);
+
+    // For now we only allow transfer to user account
+    if (to != senderEmail) {
+      res
+        .status(400)
+        .setCode(395)
+        .setPayload([{ param: "to", msg: "Use your own email" }]);
+      throw new Error("Invalid user email");
+    }
+
+    // Check if the user have enough balance
+    const balance = (
+      await User.findOne(
+        {
+          _id: user,
+        },
+        { balance: 1 }
+      )
+    ).balance;
+
+    // Check if the user have enough balance
+    if (amount > balance) {
+      res
+        .status(400)
+        .setCode(395)
+        .setPayload([
+          { param: "amount", msg: "You don't have enough balance" },
+        ]);
+      throw new Error("Invalid transfer amount");
+    }
+
+    // Update the user balance
+    const newBalance = balance - amount;
+    const balanceUpdate = await User.findOneAndUpdate(
+      {
+        _id: user,
+      },
+      { balance: newBalance }
+    );
+
+    if (!balanceUpdate) {
+      res.status(400).setCode(394);
+      throw new Error("Something went wrong");
+    }
+
+    // Initate the transfer
+    const transferData = {
+      to: user,
+      from: user,
+      type: "etransfer",
+      amount,
+      status: "Pending",
+      security: {
+        question: securityQuestion,
+        answer: securityAnswer,
+      },
+    };
+
+    // Create a new transfer
+    const transfer = await Transaction.create(transferData);
+
+    if (!transfer) {
+      throw new Error("Cannot initate the transfer");
+    }
+
+    // Send the nofication email
+    emailNotifications(name, to, name, amount, process.env.TRANSFER_TEMPLATE);
+
+    return res.status(200).setPayload(transfer).setCode(847).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 // Get a single transaction
 const getTransaction = asyncHandler(async (req, res) => {
@@ -43,7 +134,7 @@ const getTransaction = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).setCode(475).setPayload(transaction).respond();
-    ``;
+    
   } catch (error) {
     throw new Error(error);
   }
@@ -112,6 +203,7 @@ const create = asyncHandler(async (req, res) => {
         pushNotificationToken: 1,
         allowedPushNotifications: 1,
         lifeTimeEarnings: 1,
+        name: 1,
       }
     );
 
@@ -154,7 +246,12 @@ const create = asyncHandler(async (req, res) => {
 
     // Send a notification to user
     receiver.allowedPushNotifications &&
-      pushNotification(receiver.pushNotificationToken);
+      pushNotification(
+        receiver.pushNotificationToken,
+        "Depoisted Recieved",
+        `You have received a transfer from ${req.user.name}`,
+        { url: `${process.env.APP_SCHEME_URL}transfer/${transaction._id}` }
+      );
     return res.setCode(433).setPayload({ balance }).respond();
   } catch (error) {
     throw new Error(error);
@@ -163,6 +260,7 @@ const create = asyncHandler(async (req, res) => {
 
 module.exports = {
   create,
+  etransfer,
   listTransactions,
   getTransaction,
 };

@@ -1,6 +1,32 @@
 const { body, param } = require("express-validator");
 const mongoose = require("mongoose");
 
+// Custom function to check amount
+const amountValidationCheck = (amount) => {
+  const number = parseInt(amount);
+  if (!number) {
+    throw new Error("Incorrect amount");
+  }
+  if (number <= 0) {
+    throw new Error("Incorrect amount");
+  }
+  return true;
+};
+
+// Validate the etransfer
+const etransfer = [
+  body("to").isEmail().withMessage("Provide a valid email address"),
+  body("securityQuestion")
+    .not()
+    .isEmpty()
+    .withMessage("Provide the security question"),
+  body("securityAnswer")
+    .not()
+    .isEmpty()
+    .withMessage("Provide the security answer"),
+  body("amount").custom((amount) => amountValidationCheck(amount)),
+];
+
 // Validtor for a single transaction
 const transaction = [
   param("transferId")
@@ -25,15 +51,11 @@ const create = [
     .withMessage("Please provide a valid email address")
     .trim()
     .escape(),
-  body("amount").custom((amount) => {
-    if (!parseInt(amount)) {
-      throw new Error("Incorrect amount");
-    }
-    return true;
-  }),
+  body("amount").custom((amount) => amountValidationCheck(amount)),
 ];
 
 module.exports = {
   create,
+  etransfer,
   transaction,
 };
