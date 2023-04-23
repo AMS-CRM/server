@@ -6,11 +6,20 @@ const validation = require("../../validators/payroll");
 
 /**
  *
- * @API     /payroll/
- * @Dec     Create a new payroll
+ * @API     POST /payroll/
+ * @Desc     Create a new payroll
  * @Access  Private
  *
  */
 router.post("/", protect, validation.create, controller.create);
+
+/**
+ *
+ * @API     GET /payroll/
+ * @Desc    List all the payrolls
+ * @Access  Private
+ *
+ */
+router.get("/", protect, controller.list);
 
 module.exports = router;

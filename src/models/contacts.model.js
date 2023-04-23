@@ -1,72 +1,88 @@
 const mongoose = require("mongoose");
-const Schema =  mongoose.Schema;
+const Schema = mongoose.Schema;
 
 const contactSchema = new Schema({
-    firstName: {
-        type: String,
-        required: true
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  middleName: {
+    type: String,
+    required: false,
+  },
+  email: {
+    type: String,
+    required: false,
+  },
+  labels: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "labels",
     },
-    lastName: {
-        type: String,
-        required: true,
+  ],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+  },
+  dob: {
+    type: Date,
+    required: true,
+  },
+  passport: {
+    type: String,
+    required: true,
+  },
+  nationality: {
+    type: String,
+    required: true,
+  },
+  payroll: {
+    securityQuestion: {
+      type: String,
+      default: "what is 4+4",
     },
-    middleName: {
-        type: String,
-        required: false
+    securityAnswer: {
+      type: String,
+      default: "4",
     },
-    email: {
-        type: String,
-        required: false
+    amount: {
+      type: Number,
+      default: 0,
     },
-    labels: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "labels"
-    }],
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
+  },
+  phone: {
+    number: {
+      type: Number,
+      required: true,
     },
-    dob: {
-        type: Date, 
-        required: true,
+    country: {
+      type: String,
+      required: true,
     },
-    passport: {
-        type: String,
-        required: true, 
-    },
-    nationality: {
-        type: String,
-        required: true
-    },
-    phone: {
-       number: {
-            type: Number,
-            required: true
-       },
-       country: {
-            type: String,
-            required: true
-       }
-    },
+  },
+  address: {
     address: {
-        address: {
-            type: String
-        },
-        city: {
-            type: String
-        },
-        state: {
-            type: String
-        },
-        postalCode: {
-            type: String
-        }
+      type: String,
     },
-    createdOn: {
-        type: Date, 
-        default: new Date(),
-        required: true
-    }
-})
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
+  },
+  createdOn: {
+    type: Date,
+    default: new Date(),
+    required: true,
+  },
+});
 
 module.exports = contacts = mongoose.model("contacts", contactSchema);

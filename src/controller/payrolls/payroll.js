@@ -13,7 +13,7 @@ const create = asyncHandler(async (req, res) => {
 
   try {
     const { _id: user } = req.user;
-    const { selectAll, users } = req.body;
+    const { selectAll, user: users } = req.body;
     let query = {
       users,
       status: "include",
@@ -49,6 +49,26 @@ const create = asyncHandler(async (req, res) => {
   }
 });
 
+// Get the list of the payrolls
+const list = asyncHandler(async (req, res) => {
+  try {
+    const { _id: user } = req.user;
+    // Get the list of all payrolls for a user
+    const list = await Payroll.find({ user });
+
+    if (!list) {
+      res.status(400).setCode(344);
+      throw new Error("No payroll has been found");
+    }
+
+    // Send back the list
+    return res.status(200).setCode(243).setPayload(list).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   create,
+  list,
 };
