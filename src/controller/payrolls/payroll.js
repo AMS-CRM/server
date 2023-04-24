@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Payroll = require("../../models/payrolls.model");
+const axios = require("axios");
 
 // Controller to create a new payroll
 const create = asyncHandler(async (req, res) => {
@@ -26,14 +27,12 @@ const create = asyncHandler(async (req, res) => {
 
     // Get the count of existing payroll for the user
     const count = (await Payroll.find({ user }).count()) + 1;
-    console.log(count);
+
     const newPayroll = {
       payrollNo: count,
       user,
       query,
     };
-
-    console.log(newPayroll);
 
     // Create new payroll
     const response = await Payroll.create(newPayroll);
@@ -43,6 +42,17 @@ const create = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong when creating a payroll");
     }
 
+    // Send the payroll request with the payroll id
+    const payrollRequest = await axios.post(
+      process.env.PAYROLL_URL,
+      { _id: response._id },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${process.env.PAYROLL_TOKEN}`,
+        },
+      }
+    );
     res.status(200).setPayload(response).setCode(877).respond();
   } catch (error) {
     throw new Error(error);
