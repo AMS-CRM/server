@@ -6,7 +6,13 @@ const create = [
     .isEmpty()
     .withMessage("Select option is required")
     .isBoolean({ strict: true })
-    .withMessage("Should be a boolean"),
+    .withMessage("Should be a boolean")
+    .custom((select, { req }) => {
+      if (!select && req.body.user.length <= 0) {
+        throw new Error("No user has beens selected");
+      }
+      return true;
+    }),
 ];
 
 module.exports = {

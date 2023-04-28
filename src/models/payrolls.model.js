@@ -18,6 +18,29 @@ const payrollsSchema = new Schema({
     },
     users: [mongoose.Schema.Types.ObjectId],
   },
+  payroll: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "users",
+      },
+      data: {
+        securityQuestion: {
+          type: String,
+          required: false,
+        },
+        securityAnswer: {
+          type: String,
+          required: false,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+      },
+    },
+  ],
   status: {
     type: String,
     enum: ["Pending", "Processing", "Completed", "Error"],
