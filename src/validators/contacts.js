@@ -91,7 +91,7 @@ const editContact = [
       }
       return true;
     })
-    .toInt(),
+    .toFloat(),
 ];
 
 const deleteContact = [

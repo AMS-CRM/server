@@ -38,6 +38,45 @@ const payrollsSchema = new Schema({
           type: Number,
           required: true,
         },
+        employeeEarnings: {
+          Cpp: {
+            type: Number,
+          },
+          Ei: {
+            type: Number,
+          },
+        },
+        employerCosts: {
+          CPP: {
+            type: Number,
+          },
+          EI: {
+            type: Number,
+          },
+          employeeEIreturnable: {
+            type: Number,
+          },
+          PEHT: {
+            type: Number,
+          },
+        },
+        employeePayrollDeductions: {
+          CPP: {
+            type: Number,
+          },
+          EI: {
+            type: Number,
+          },
+          ITD: {
+            type: Number,
+          },
+          ITDfed: {
+            type: Number,
+          },
+          ITDprov: {
+            type: Number,
+          },
+        },
       },
     },
   ],
