@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 
 // Get the models
 const contacts = require("../../models/contacts.model.js");
-const { find } = require("../../models/contacts.model.js");
+const { ObjectId } = require("mongodb");
 
 const createContact = asyncHandler(async (req, res) => {
   // Check the validation errors
@@ -154,6 +154,78 @@ const deleteContact = asyncHandler(async (req, res) => {
   }
 });
 
+// Get a single contact using the email
+const getContactWithEmail = asyncHandler(async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { _id } = req.user;
+
+    // Get the contact with all the payrolls
+    const response = await contacts.aggregate([
+      // Find the user by ID
+      { $match: { email: email } },
+      // Lookup the payroll information based on user ID
+      {
+        $lookup: {
+          from: "payrolls",
+          let: { userId: "$_id" },
+          pipeline: [
+            { $unwind: "$payroll" },
+            {
+              $match: {
+                $expr: { $eq: ["$payroll.user", { $toObjectId: "$$userId" }] },
+              },
+            },
+          ],
+          as: "payRunHistory",
+        },
+      },
+      // Project only the payroll information
+      {
+        $project: {
+          payRunHistory: 1,
+          firstName: 1,
+          lastName: 1,
+          phone: 1,
+          totalGrossAmount: { $sum: "$payRunHistory.payroll.data.amount" },
+          totalNetAmount: { $sum: "$payRunHistory.payroll.data.netAmount" },
+          totalCPP: {
+            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.CPP",
+          },
+          totalEI: {
+            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.EI",
+          },
+          totalITDfed: {
+            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITDfed",
+          },
+          totalITDprov: {
+            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITDprov",
+          },
+          totalITD: {
+            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITD",
+          },
+          address: 1,
+          passport: 1,
+          dob: 1,
+          createdOn: 1,
+          email: 1,
+          payroll: 1,
+          _id: 1,
+        },
+      },
+    ]);
+
+    if (!response) {
+      res.status(400).setCode(3094);
+      throw new Error("Cannot find the contact");
+    }
+
+    return res.status(200).setPayload(response[0]).setCode(449).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // Controller to mass update the contact pay information
 const editContactPayroll = asyncHandler(async (req, res) => {
   try {
@@ -176,11 +248,17 @@ const editContact = asyncHandler(async (req, res) => {
     const data = matchedData(req);
     const { user: contactId } = data;
     delete data.user;
+    const keys = Object.keys(data.payroll);
 
     // Update the user data
-    const update = await contacts.findOneAndUpdate({ _id: contactId }, data, {
-      new: true,
-    });
+    const update = await contacts.findOneAndUpdate(
+      { _id: contactId },
+      { $set: { [`payroll.${keys[0]}`]: data.payroll[keys[0]] } },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     if (!update) {
       res.status(400).setCode(343);
@@ -198,4 +276,5 @@ module.exports = {
   getContacts,
   deleteContact,
   editContact,
+  getContactWithEmail,
 };

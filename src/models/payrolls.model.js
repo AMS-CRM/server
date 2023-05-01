@@ -18,12 +18,35 @@ const payrollsSchema = new Schema({
     },
     users: [mongoose.Schema.Types.ObjectId],
   },
+  payrollSummary: {
+    EI: {
+      type: Number,
+    },
+    CPP: {
+      type: Number,
+    },
+    ITDfed: {
+      type: Number,
+    },
+    ITDprov: {
+      type: Number,
+    },
+    netAmount: {
+      type: Number,
+    },
+    grossAmount: {
+      type: Number,
+    },
+  },
   payroll: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "users",
+        ref: "contacts",
+      },
+      totalDeductions: {
+        type: String,
       },
       data: {
         securityQuestion: {
@@ -37,6 +60,9 @@ const payrollsSchema = new Schema({
         amount: {
           type: Number,
           required: true,
+        },
+        netAmount: {
+          type: Number,
         },
         employeeEarnings: {
           Cpp: {
@@ -82,8 +108,8 @@ const payrollsSchema = new Schema({
   ],
   status: {
     type: String,
-    enum: ["Pending", "Processing", "Completed", "Error"],
-    default: "Pending",
+    enum: ["Under Review", "Pending", "Processing", "Completed", "Error"],
+    default: "Under Review",
   },
   createdOn: {
     type: Date,

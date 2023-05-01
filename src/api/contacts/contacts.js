@@ -10,6 +10,7 @@ const {
   getContacts,
   deleteContact,
   editContact,
+  getContactWithEmail,
 } = require("../../controller/contacts/contacts.js");
 
 // Get the validators
@@ -24,6 +25,21 @@ const validators = require("../../validators/contacts.js");
  *
  */
 router.post("/", protect, validators.createContact, createContact);
+
+/**
+ *
+ * @Route    POST /api/contacts/:email
+ * @Desc     Route to create new contact
+ * @access   Private
+ * @User     Any
+ *
+ */
+router.get(
+  "/get/:email",
+  protect,
+  validators.getContactWithEmail,
+  getContactWithEmail
+);
 
 /**
  *

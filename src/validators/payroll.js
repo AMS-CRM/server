@@ -1,4 +1,11 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
+
+const getPayrollData = [
+  param("payroll").not().isEmpty().withMessage("Payroll is required"),
+];
+const approve = [
+  body("payroll").not().isEmpty().withMessage("Payroll is required"),
+];
 
 const create = [
   body("selectAll")
@@ -17,4 +24,6 @@ const create = [
 
 module.exports = {
   create,
+  approve,
+  getPayrollData,
 };

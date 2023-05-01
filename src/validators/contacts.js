@@ -1,4 +1,8 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
+
+const getContactWithEmail = [
+  param("email").not().isEmpty().withMessage("Email address is required"),
+];
 
 /**
  * Extend the edit user and add subscription with default plan
@@ -107,4 +111,5 @@ module.exports = {
   createContact,
   deleteContact,
   editContact,
+  getContactWithEmail,
 };

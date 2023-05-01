@@ -5,6 +5,78 @@ const Contacts = require("../../models/contacts.model");
 const fetch = require("node-fetch");
 const mongoose = require("mongoose");
 
+// Get the details of an individual payroll
+const getPayrollData = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(304).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { payroll } = req.params;
+    const { _id: user } = req.user;
+
+    const payrollData = await Payroll.findOne({
+      user,
+      payrollNo: payroll,
+    }).populate({
+      path: "payroll",
+      populate: {
+        path: "user",
+        select: {
+          _id: 0,
+          email: 1,
+          firstName: 1,
+          lastName: 1,
+        },
+      },
+    });
+
+    if (!payrollData) {
+      res.status(400).setCode(349);
+      throw new Error("No payroll found for this user");
+    }
+
+    return res.status(200).setCode(400).setPayload(payrollData).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Controller to approve a new payroll
+const approve = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(304).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { payroll } = req.body;
+    const { _id: user } = req.user;
+
+    const approve = await Payroll.findOneAndUpdate(
+      {
+        user,
+        _id: payroll,
+      },
+      {
+        status: "Pending",
+      }
+    );
+
+    if (!approve) {
+      res.status(400).setCode(349);
+      throw new Error("No payroll found for this user");
+    }
+
+    return res.status(200).setCode(400).setPayload(approve).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // Controller to create a new payroll
 const create = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -55,13 +127,24 @@ const create = asyncHandler(async (req, res) => {
     });
 
     if (!usersList) {
-      // res.stutus(400).setCode(384);
-      // throw new Error("No users found");
-      console.log("error");
+      res.stutus(400).setCode(384);
+      throw new Error("No users found");
     }
 
     const errors = [];
     const usersData = [];
+    const responseData = [];
+    let grossAmount = 0;
+    let payrollSummary = {
+      ITD: 0,
+      CPP: 0,
+      EI: 0,
+      ITDfed: 0,
+      ITDprov: 0,
+      totalDeductions: 0,
+      netAmount: 0,
+      grossAmount: 0,
+    };
 
     // Loop through the list of the users
     for (let i = 0; i < usersList.length; i++) {
@@ -74,6 +157,7 @@ const create = asyncHandler(async (req, res) => {
           firstName,
           lastName,
           payroll,
+          message: "The amount should be greater than $0",
         });
       }
 
@@ -116,10 +200,49 @@ const create = asyncHandler(async (req, res) => {
         // Get the json response
         const responseJson = await response.json();
 
+        // Calculate the sum
+
+        // Employee total deducation and net amount
+        const totalDeductions =
+          responseJson.employeePayrollDeductions.ITD +
+          responseJson.employeePayrollDeductions.CPP +
+          responseJson.employeePayrollDeductions.EI;
+
+        const netAmount = payroll.amount - totalDeductions;
+        grossAmount += payroll.amount;
+
+        // Calulate the total summary for employee
+        payrollSummary.ITD += responseJson.employeePayrollDeductions.ITD;
+        payrollSummary.CPP += responseJson.employeePayrollDeductions.CPP;
+        payrollSummary.EI += responseJson.employeePayrollDeductions.EI;
+        payrollSummary.ITDfed += responseJson.employeePayrollDeductions.ITDfed;
+        payrollSummary.ITDprov +=
+          responseJson.employeePayrollDeductions.ITDprov;
+        payrollSummary.totalDeductions += totalDeductions;
+        payrollSummary.netAmount += netAmount;
+        payrollSummary.grossAmount += payroll.amount;
+
+        responseData.push({
+          name: `${firstName} ${lastName}`,
+          email: email,
+          securityQuestion: payroll.securityQuestion,
+          securityAnswer: payroll.securityAnswer,
+          CPP: responseJson.employeePayrollDeductions.CPP,
+          EI: responseJson.employeePayrollDeductions.EI,
+          ITD: responseJson.employeePayrollDeductions.ITD,
+          ITDfed: responseJson.employeePayrollDeductions.ITDfed,
+          ITDprov: responseJson.employeePayrollDeductions.ITDprov,
+          totalDeductions,
+          grossAmount: payroll.amount,
+          netAmount: netAmount,
+        });
+
         usersData.push({
           user: user._id,
           data: {
             ...payroll,
+            netAmount,
+            totalDeductions,
             employeePayrollDeductions: responseJson.employeePayrollDeductions,
             employeeEarnings: responseJson.employeeEarnings,
             employerCosts: responseJson.employerCosts,
@@ -127,13 +250,17 @@ const create = asyncHandler(async (req, res) => {
         });
       }
     }
-    console.log("responseJson");
-
-    console.log(JSON.stringify(usersData));
+    payrollSummary.netAmount = Number(payrollSummary.netAmount).toFixed(2);
+    // Check if any errors exits
+    if (errors.length != 0) {
+      res.status(400).setCode(303).setPayload(errors);
+      throw new Error("The payroll data need fixes");
+    }
 
     const newPayroll = {
       payrollNo: count,
       user,
+      payrollSummary,
       query,
       payroll: usersData,
     };
@@ -156,9 +283,17 @@ const create = asyncHandler(async (req, res) => {
           Authorization: `Basic ${process.env.PAYROLL_TOKEN}`,
         },
       }
-    );
+    );*/
 
-    res.status(200).setPayload(dataView).setCode(877).respond();*/
+    res
+      .status(200)
+      .setPayload({
+        payroll: response._id,
+        totalAmount: grossAmount,
+        users: responseData,
+      })
+      .setCode(877)
+      .respond();
   } catch (error) {
     throw new Error(error);
   }
@@ -186,4 +321,6 @@ const list = asyncHandler(async (req, res) => {
 module.exports = {
   create,
   list,
+  approve,
+  getPayrollData,
 };
