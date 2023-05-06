@@ -37,6 +37,9 @@ const payrollsSchema = new Schema({
     grossAmount: {
       type: Number,
     },
+    totalDeductions: {
+      type: Number,
+    },
   },
   payroll: [
     {
@@ -45,16 +48,31 @@ const payrollsSchema = new Schema({
         required: true,
         ref: "contacts",
       },
-      totalDeductions: {
+      payStub: {
         type: String,
       },
       data: {
+        totalDeductions: {
+          type: Number,
+        },
         securityQuestion: {
           type: String,
           required: false,
         },
         securityAnswer: {
           type: String,
+          required: false,
+        },
+        hours: {
+          type: Number,
+          required: false,
+        },
+        payRate: {
+          type: Number,
+          required: false,
+        },
+        extraPay: {
+          type: Number,
           required: false,
         },
         amount: {

@@ -1,5 +1,17 @@
 const { body, param } = require("express-validator");
 
+// Validation custom function to check if the given amount is corrent number
+const checkNumValue = (numValue) => {
+  const number = isNaN(numValue);
+  if (number) {
+    throw new Error("Incorrect amount");
+  }
+  if (parseInt(numValue) <= 0) {
+    throw new Error("Incorrect amount");
+  }
+  return true;
+};
+
 const getContactWithEmail = [
   param("email").not().isEmpty().withMessage("Email address is required"),
 ];
@@ -30,10 +42,10 @@ const createContact = [
     .withMessage("Date of birth is required")
     .trim()
     .escape(),
-  body("passport")
+  body("Employee ID")
     .not()
     .isEmpty()
-    .withMessage("passport is required")
+    .withMessage("Employee ID is required")
     .trim()
     .escape(),
   body("dial_code")
@@ -78,23 +90,32 @@ const createContact = [
 // Edit a contact
 const editContact = [
   body("user").not().isEmpty().withMessage("User is required"),
+  body("salary.wage")
+    .optional()
+    .custom((amount) => checkNumValue(amount))
+    .toFloat(),
+  body("payroll.hours")
+    .optional()
+    .custom((amount) => checkNumValue(amount))
+    .toFloat(),
+  body("payroll.extraPay")
+    .optional()
+    .custom((amount) => checkNumValue(amount))
+    .toFloat(),
   body("payroll.securityQuestion")
     .optional()
-    .isString()
+    .not()
+    .isEmpty()
     .withMessage("Security question is not valid"),
-  body("payroll.securityAnswer").optional().isString(),
+  body("payroll.securityAnswer")
+    .optional()
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Security answer is not valid"),
   body("payroll.amount")
     .optional()
-    .custom((amount) => {
-      const number = isNaN(amount);
-      if (number) {
-        throw new Error("Incorrect amount");
-      }
-      if (parseInt(amount) <= 0) {
-        throw new Error("Incorrect amount");
-      }
-      return true;
-    })
+    .custom((amount) => checkNumValue(amount))
     .toFloat(),
 ];
 

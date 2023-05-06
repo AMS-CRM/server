@@ -3,7 +3,18 @@ const { validationResult } = require("express-validator");
 const Payroll = require("../../models/payrolls.model");
 const Contacts = require("../../models/contacts.model");
 const fetch = require("node-fetch");
+const axios = require("axios");
 const mongoose = require("mongoose");
+const { S3, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+
+// Temp add func
+const add = (...args) => {
+  const result = args.reduce((total, num) => {
+    return num * 100 + total;
+  }, 0);
+  return result / 100;
+};
 
 // Get the details of an individual payroll
 const getPayrollData = asyncHandler(async (req, res) => {
@@ -70,6 +81,24 @@ const approve = asyncHandler(async (req, res) => {
       res.status(400).setCode(349);
       throw new Error("No payroll found for this user");
     }
+    console.log(approve._id);
+    console.log(`Basic ${req.headers.authorization.split(" ")[1]}`);
+    // Send the payroll request with the payroll id
+    const payrollRequest = await axios.post(
+      process.env.WEBHOOKS_ENDPOINT,
+      { _id: approve._id },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${req.headers.authorization.split(" ")[1]}`,
+        },
+      }
+    );
+    console.log(payrollRequest);
+
+    if (!payrollRequest) {
+      throw new Error("Request failed");
+    }
 
     return res.status(200).setCode(400).setPayload(approve).respond();
   } catch (error) {
@@ -124,6 +153,7 @@ const create = asyncHandler(async (req, res) => {
       firstName: 1,
       lastName: 1,
       payroll: 1,
+      salary: 1,
     });
 
     if (!usersList) {
@@ -149,7 +179,7 @@ const create = asyncHandler(async (req, res) => {
     // Loop through the list of the users
     for (let i = 0; i < usersList.length; i++) {
       const user = usersList[i];
-      const { email, firstName, lastName, payroll } = user;
+      const { email, firstName, lastName, payroll, salary } = user;
 
       if (payroll.amount == 0) {
         errors.push({
@@ -165,7 +195,7 @@ const create = asyncHandler(async (req, res) => {
       if (errors.length == 0) {
         // Get this data from backend
         const paycycle = 52;
-        const wages = payroll.amount;
+        const amount = payroll.amount;
         // Calculate the payroll for the user
         const response = await fetch(
           "https://api.metca.net/cptl/tax/calculate",
@@ -189,7 +219,7 @@ const create = asyncHandler(async (req, res) => {
               '{"province":"ON","annualPayPeriods":' +
               paycycle +
               ',"birthDate":" ","federalTD1":{"totalClaimAmount":1,"noIncomeTaxDeductions":false,"HD":0,"L":0,"CRA_F1":0,"CRA_K3":0},"federalTD1X":{"I1":0,"E":0},"provincialTD1P":{"totalClaimAmount":1,"noIncomeTaxDeductions":false,"CRA_K3P":0,"CRA_Y":0},"exemptions":{"CPP":false,"EI":false,"PPIP":false},"ytdPayroll":{"ytdIncome":{"wages":0,"pension":0,"vacationPay":0,"bonus":0,"comm":0,"txCashBenefits":0,"txNonCashBenefits":0},"ytdDeductions":{"CPP":0,"EI":0,"PPIP":0,"ITD":0,"LSFp":0,"LSFpProv":0,"LSFp_P":0,"F":0,"U1":0,"F2":0,"L":0}},"currentPayroll":{"payDate":"2023-04-27","calcType":1,"calcMethod":0,"payPeriod":0,"cntPP":0,"noCppBasicExemption":false,"employerEIfactor":0,"income":{"wages":"' +
-              wages +
+              amount +
               '","vacationPay":0,"retroPayPeriods":1,"daysSincePrevCommPmt":0,"txCashBenefits":0,"txNonCashBenefits":0},"deductions":{"F":0,"U1":0,"F2":0,"bonus":0,"retroPay":0}}}',
             method: "POST",
             mode: "cors",
@@ -202,29 +232,48 @@ const create = asyncHandler(async (req, res) => {
 
         // Calculate the sum
 
-        // Employee total deducation and net amount
-        const totalDeductions =
-          responseJson.employeePayrollDeductions.ITD +
-          responseJson.employeePayrollDeductions.CPP +
-          responseJson.employeePayrollDeductions.EI;
-
-        const netAmount = payroll.amount - totalDeductions;
-        grossAmount += payroll.amount;
-
-        // Calulate the total summary for employee
-        payrollSummary.ITD += responseJson.employeePayrollDeductions.ITD;
-        payrollSummary.CPP += responseJson.employeePayrollDeductions.CPP;
-        payrollSummary.EI += responseJson.employeePayrollDeductions.EI;
-        payrollSummary.ITDfed += responseJson.employeePayrollDeductions.ITDfed;
-        payrollSummary.ITDprov +=
-          responseJson.employeePayrollDeductions.ITDprov;
-        payrollSummary.totalDeductions += totalDeductions;
-        payrollSummary.netAmount += netAmount;
-        payrollSummary.grossAmount += payroll.amount;
+        // Current employee calculations
+        const totalDeductions = add(
+          responseJson.employeePayrollDeductions.CPP,
+          responseJson.employeePayrollDeductions.EI,
+          responseJson.employeePayrollDeductions.ITD
+        );
+        const netAmount = amount - totalDeductions;
+        grossAmount = add(amount + grossAmount);
+        // Calulate the total summary for this payroll
+        payrollSummary.ITD = add(
+          payrollSummary.ITD,
+          responseJson.employeePayrollDeductions.ITD
+        );
+        payrollSummary.CPP = add(
+          payrollSummary.CPP,
+          responseJson.employeePayrollDeductions.CPP
+        ); // responseJson.employeePayrollDeductions.CPP;
+        payrollSummary.EI = add(
+          payrollSummary.EI,
+          responseJson.employeePayrollDeductions.EI
+        ); // responseJson.employeePayrollDeductions.EI;
+        payrollSummary.ITDfed = add(
+          payrollSummary.ITDfed,
+          responseJson.employeePayrollDeductions.ITDfed
+        ); // responseJson.employeePayrollDeductions.ITDfed;
+        payrollSummary.ITDprov = add(
+          payrollSummary.ITDprov,
+          responseJson.employeePayrollDeductions.ITDprov
+        ); // responseJson.employeePayrollDeductions.ITDprov;
+        payrollSummary.totalDeductions = add(
+          payrollSummary.totalDeductions,
+          totalDeductions
+        ); // totalDeductions;
+        payrollSummary.netAmount = add(payrollSummary.netAmount, netAmount); // netAmount;
+        payrollSummary.grossAmount = grossAmount; // payroll.amount;
 
         responseData.push({
           name: `${firstName} ${lastName}`,
           email: email,
+          hours: payroll.hours,
+          extraPay: payroll.extraPay,
+          payRate: salary.wage,
           securityQuestion: payroll.securityQuestion,
           securityAnswer: payroll.securityAnswer,
           CPP: responseJson.employeePayrollDeductions.CPP,
@@ -232,8 +281,8 @@ const create = asyncHandler(async (req, res) => {
           ITD: responseJson.employeePayrollDeductions.ITD,
           ITDfed: responseJson.employeePayrollDeductions.ITDfed,
           ITDprov: responseJson.employeePayrollDeductions.ITDprov,
-          totalDeductions,
-          grossAmount: payroll.amount,
+          totalDeductions: totalDeductions,
+          grossAmount: amount,
           netAmount: netAmount,
         });
 
@@ -241,8 +290,11 @@ const create = asyncHandler(async (req, res) => {
           user: user._id,
           data: {
             ...payroll,
-            netAmount,
-            totalDeductions,
+            hours: payroll.hours,
+            extraPay: payroll.extraPay,
+            payRate: salary.wage,
+            netAmount: netAmount,
+            totalDeductions: totalDeductions,
             employeePayrollDeductions: responseJson.employeePayrollDeductions,
             employeeEarnings: responseJson.employeeEarnings,
             employerCosts: responseJson.employerCosts,
@@ -250,7 +302,7 @@ const create = asyncHandler(async (req, res) => {
         });
       }
     }
-    payrollSummary.netAmount = Number(payrollSummary.netAmount).toFixed(2);
+
     // Check if any errors exits
     if (errors.length != 0) {
       res.status(400).setCode(303).setPayload(errors);
@@ -273,18 +325,6 @@ const create = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong when creating a payroll");
     }
 
-    // Send the payroll request with the payroll id
-    /*const payrollRequest = await axios.post(
-      process.env.PAYROLL_URL,
-      { _id: response._id },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Basic ${process.env.PAYROLL_TOKEN}`,
-        },
-      }
-    );*/
-
     res
       .status(200)
       .setPayload({
@@ -294,6 +334,54 @@ const create = asyncHandler(async (req, res) => {
       })
       .setCode(877)
       .respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Route to generate the paystub download link
+const paySubDownloadLink = asyncHandler(async (req, res) => {
+  try {
+    // Get the paystub file name
+    const { userId, payrollId } = req.body;
+    console.log(userId);
+    const findPayStub = await Payroll.findOne({
+      user: req.user._id,
+      _id: payrollId,
+      "payroll.user": userId,
+      "payroll.payStub": { $exists: true },
+    }).populate("payroll.user");
+
+    if (!findPayStub) {
+      throw new Error("Cannot find the payroll");
+    }
+    const s3Client = new S3({
+      forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+      endpoint: process.env.S3_ENDPOINT,
+      region: process.env.S3_REGION,
+      credentials: {
+        accessKeyId: process.env.S3_KEY,
+        secretAccessKey: process.env.S3_SECRET,
+      },
+    });
+
+    // Compose a new filename
+    // Generate the download temp download link
+    const url = await getSignedUrl(
+      s3Client,
+      new GetObjectCommand({
+        Bucket: "paystub",
+        Key: findPayStub.payroll[0].payStub,
+        ResponseContentDisposition: `attachment; filename="Payroll${findPayStub.payrollNo}-${findPayStub.payroll[0].user.firstName} ${findPayStub.payroll[0].user.lastName}.pdf"`,
+      }),
+      { expiresIn: 15 * 60 }
+    ); // Adjustable expiration.
+
+    if (!url) {
+      throw new Error("Cannot generate the download URL");
+    }
+
+    return res.status(200).setCode(893).setPayload({ url: url }).respond();
   } catch (error) {
     throw new Error(error);
   }
@@ -323,4 +411,5 @@ module.exports = {
   list,
   approve,
   getPayrollData,
+  paySubDownloadLink,
 };

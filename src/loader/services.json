@@ -11,5 +11,6 @@
   "countries": "/countries/countries.js",
   "organizations": "/organizations/index.js",
   "transactions": "/transactions/transactions.js",
-  "payroll": "/payrolls/payroll.js"
+  "payroll": "/payrolls/payroll.js",
+  "dashboard": "/dashboard/index.js"
 }

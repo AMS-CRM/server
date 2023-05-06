@@ -1,5 +1,10 @@
 const { body, param } = require("express-validator");
 
+const paySubDownloadLink = [
+  body("userId").not().isEmpty().withMessage("User id cannot be empty"),
+  body("payrollId").not().isEmpty().withMessage("Payroll Id cannot be empty"),
+];
+
 const getPayrollData = [
   param("payroll").not().isEmpty().withMessage("Payroll is required"),
 ];
@@ -26,4 +31,5 @@ module.exports = {
   create,
   approve,
   getPayrollData,
+  paySubDownloadLink,
 };

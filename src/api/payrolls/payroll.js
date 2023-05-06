@@ -6,12 +6,26 @@ const validation = require("../../validators/payroll");
 
 /**
  *
- * @API     PUT /payroll
+ * @API     POST /payroll
  * @Desc     Create a new payroll
  * @Access  Private
  *
  */
 router.post("/", protect, validation.create, controller.create);
+
+/**
+ *
+ * @API     POST /payroll/paystub
+ * @Desc    Generate the paystub download link
+ * @Access  Private
+ *
+ */
+router.post(
+  "/paystub",
+  protect,
+  validation.paySubDownloadLink,
+  controller.paySubDownloadLink
+);
 
 /**
  *

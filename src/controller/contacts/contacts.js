@@ -1,5 +1,6 @@
 const { validationResult, matchedData } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const nested = require("../../utils/nestedObjectDecode");
 
 // Get the models
 const contacts = require("../../models/contacts.model.js");
@@ -90,7 +91,7 @@ const getContacts = asyncHandler(async (req, res) => {
   const PAGE_LIMIT = process.env.PAGE_LIMIT || 10;
   const STARTIN_POINT = !parseInt(page) ? 0 : page * PAGE_LIMIT - PAGE_LIMIT;
   const query =
-    search && keyword ? { [search]: new RegExp(`.*${keyword}.*`) } : {};
+    search && keyword ? { [search]: new RegExp(`.*${keyword}.*`, "i") } : {};
 
   try {
     // Get the list of all contacts from a particular user
@@ -98,7 +99,7 @@ const getContacts = asyncHandler(async (req, res) => {
       .find({ user: user, ...query })
       .skip(STARTIN_POINT)
       .limit(PAGE_LIMIT);
-
+    console.log(query);
     // Get the total count of the all contacts
     const count = await contacts.count({ user: user, ...query });
 
@@ -183,10 +184,12 @@ const getContactWithEmail = asyncHandler(async (req, res) => {
       // Project only the payroll information
       {
         $project: {
+          _id: 1,
           payRunHistory: 1,
           firstName: 1,
           lastName: 1,
           phone: 1,
+          salary: 1,
           totalGrossAmount: { $sum: "$payRunHistory.payroll.data.amount" },
           totalNetAmount: { $sum: "$payRunHistory.payroll.data.netAmount" },
           totalCPP: {
@@ -226,15 +229,6 @@ const getContactWithEmail = asyncHandler(async (req, res) => {
   }
 });
 
-// Controller to mass update the contact pay information
-const editContactPayroll = asyncHandler(async (req, res) => {
-  try {
-    // Get the payroll information
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
 // Controller to edit a contact
 const editContact = asyncHandler(async (req, res) => {
   // Validate the incoming data
@@ -248,12 +242,13 @@ const editContact = asyncHandler(async (req, res) => {
     const data = matchedData(req);
     const { user: contactId } = data;
     delete data.user;
-    const keys = Object.keys(data.payroll);
+
+    const nestedData = nested(data);
 
     // Update the user data
     const update = await contacts.findOneAndUpdate(
       { _id: contactId },
-      { $set: { [`payroll.${keys[0]}`]: data.payroll[keys[0]] } },
+      { $set: nestedData },
       {
         upsert: true,
         new: true,

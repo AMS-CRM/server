@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const contactSchema = new Schema({
   firstName: {
     type: String,
-    required: true,
+    required: false,
   },
   lastName: {
     type: String,
@@ -32,13 +32,31 @@ const contactSchema = new Schema({
     type: Date,
     required: true,
   },
-  passport: {
+  employeeId: {
     type: String,
     required: true,
   },
   nationality: {
     type: String,
     required: true,
+  },
+  salary: {
+    salaryType: {
+      type: String,
+      enum: ["Hourly"],
+      default: "Hourly",
+    },
+    wage: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    payCycle: {
+      type: String,
+      enum: ["Weekly", "Bi-weekly"],
+      default: "Weekly",
+      required: true,
+    },
   },
   payroll: {
     securityQuestion: {
@@ -48,6 +66,14 @@ const contactSchema = new Schema({
     securityAnswer: {
       type: String,
       default: "4",
+    },
+    hours: {
+      type: Number,
+      default: 0,
+    },
+    extraPay: {
+      type: Number,
+      default: 0,
     },
     amount: {
       type: Number,
