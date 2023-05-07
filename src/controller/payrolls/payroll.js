@@ -17,11 +17,13 @@ const add = (...args) => {
 };
 
 const subtract = (...args) => {
-  const result = args.reduce((total, num) => {
+  const result = args.reduceRight((total, num) => {
     return num * 100 - total;
   }, 0);
   return result / 100;
 };
+
+662 * 100 - 0;
 
 // Get the details of an individual payroll
 const getPayrollData = asyncHandler(async (req, res) => {
@@ -243,7 +245,7 @@ const create = asyncHandler(async (req, res) => {
           responseJson.employeePayrollDeductions.EI,
           responseJson.employeePayrollDeductions.ITD
         );
-        const netAmount = subtract(amount - totalDeductions);
+        const netAmount = subtract(amount, totalDeductions);
         grossAmount = add(amount + grossAmount);
         // Calulate the total summary for this payroll
         payrollSummary.ITD = add(
