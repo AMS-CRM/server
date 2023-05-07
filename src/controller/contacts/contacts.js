@@ -4,7 +4,6 @@ const nested = require("../../utils/nestedObjectDecode");
 
 // Get the models
 const contacts = require("../../models/contacts.model.js");
-const { ObjectId } = require("mongodb");
 
 const createContact = asyncHandler(async (req, res) => {
   // Check the validation errors
@@ -21,7 +20,7 @@ const createContact = asyncHandler(async (req, res) => {
     lastName,
     email,
     dob,
-    passport,
+    employeeId,
     dial_code,
     phone,
     nationality,
@@ -39,7 +38,7 @@ const createContact = asyncHandler(async (req, res) => {
     email,
     nationality,
     dob,
-    passport,
+    employeeId,
     phone: {
       number: phone,
       country: dial_code,
@@ -99,7 +98,7 @@ const getContacts = asyncHandler(async (req, res) => {
       .find({ user: user, ...query })
       .skip(STARTIN_POINT)
       .limit(PAGE_LIMIT);
-    console.log(query);
+
     // Get the total count of the all contacts
     const count = await contacts.count({ user: user, ...query });
 
@@ -190,22 +189,49 @@ const getContactWithEmail = asyncHandler(async (req, res) => {
           lastName: 1,
           phone: 1,
           salary: 1,
-          totalGrossAmount: { $sum: "$payRunHistory.payroll.data.amount" },
+          totalGrossAmount: {
+            $trunc: [{ $sum: "$payRunHistory.payroll.data.amount" }, 2],
+          },
           totalNetAmount: { $sum: "$payRunHistory.payroll.data.netAmount" },
           totalCPP: {
-            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.CPP",
+            $trunc: [
+              {
+                $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.CPP",
+              },
+              2,
+            ],
           },
           totalEI: {
-            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.EI",
+            $trunc: [
+              {
+                $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.EI",
+              },
+              2,
+            ],
           },
           totalITDfed: {
-            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITDfed",
+            $trunc: [
+              {
+                $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITDfed",
+              },
+              2,
+            ],
           },
           totalITDprov: {
-            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITDprov",
+            $trunc: [
+              {
+                $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITDprov",
+              },
+              2,
+            ],
           },
           totalITD: {
-            $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITD",
+            $trunc: [
+              {
+                $sum: "$payRunHistory.payroll.data.employeePayrollDeductions.ITD",
+              },
+              2,
+            ],
           },
           address: 1,
           passport: 1,

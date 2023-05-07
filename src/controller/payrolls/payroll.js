@@ -16,6 +16,13 @@ const add = (...args) => {
   return result / 100;
 };
 
+const subtract = (...args) => {
+  const result = args.reduce((total, num) => {
+    return num * 100 - total;
+  }, 0);
+  return result / 100;
+};
+
 // Get the details of an individual payroll
 const getPayrollData = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -81,8 +88,7 @@ const approve = asyncHandler(async (req, res) => {
       res.status(400).setCode(349);
       throw new Error("No payroll found for this user");
     }
-    console.log(approve._id);
-    console.log(`Basic ${req.headers.authorization.split(" ")[1]}`);
+
     // Send the payroll request with the payroll id
     const payrollRequest = await axios.post(
       process.env.WEBHOOKS_ENDPOINT,
@@ -94,7 +100,6 @@ const approve = asyncHandler(async (req, res) => {
         },
       }
     );
-    console.log(payrollRequest);
 
     if (!payrollRequest) {
       throw new Error("Request failed");
@@ -238,7 +243,7 @@ const create = asyncHandler(async (req, res) => {
           responseJson.employeePayrollDeductions.EI,
           responseJson.employeePayrollDeductions.ITD
         );
-        const netAmount = amount - totalDeductions;
+        const netAmount = subtract(amount - totalDeductions);
         grossAmount = add(amount + grossAmount);
         // Calulate the total summary for this payroll
         payrollSummary.ITD = add(
@@ -344,7 +349,7 @@ const paySubDownloadLink = asyncHandler(async (req, res) => {
   try {
     // Get the paystub file name
     const { userId, payrollId } = req.body;
-    console.log(userId);
+
     const findPayStub = await Payroll.findOne({
       user: req.user._id,
       _id: payrollId,
