@@ -48,6 +48,13 @@ const createContact = [
     .withMessage("Employee ID is required")
     .trim()
     .escape(),
+  body("hourlyWage")
+    .not()
+    .isEmpty()
+    .custom((amount) => checkNumValue(amount))
+    .withMessage("Hourly wage is required")
+    .trim()
+    .escape(),
   body("dial_code")
     .not()
     .isEmpty()
@@ -98,6 +105,11 @@ const editContact = [
     .optional()
     .custom((amount) => checkNumValue(amount))
     .toFloat(),
+  body("salary.payCycle")
+    .optional()
+
+    .isString()
+    .withMessage("Invalid value"),
   body("payroll.extraPay")
     .optional()
     .custom((amount) => {

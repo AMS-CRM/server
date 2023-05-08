@@ -26,6 +26,7 @@ const createContact = asyncHandler(async (req, res) => {
     nationality,
     address,
     state,
+    hourlyWage,
     city,
     postalCode,
   } = req.body;
@@ -48,6 +49,9 @@ const createContact = asyncHandler(async (req, res) => {
       city,
       state,
       postalCode,
+    },
+    salary: {
+      wage: hourlyWage,
     },
     user,
   };

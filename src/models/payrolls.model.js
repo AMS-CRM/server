@@ -55,6 +55,9 @@ const payrollsSchema = new Schema({
         totalDeductions: {
           type: Number,
         },
+        payCycle: {
+          type: String,
+        },
         securityQuestion: {
           type: String,
           required: false,

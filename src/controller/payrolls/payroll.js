@@ -200,8 +200,29 @@ const create = asyncHandler(async (req, res) => {
 
       // If no error exits add the users to final data
       if (errors.length == 0) {
+        let payCycle = 52;
         // Get this data from backend
-        const paycycle = 52;
+        switch (salary.payCycle) {
+          case "Daily":
+            payCycle = 240;
+            break;
+          case "Weekly":
+            payCycle = 52;
+            break;
+          case "Bi-Weekly":
+            payCycle = 26;
+            break;
+          case "Semi-Monthly":
+            payCycle = 24;
+            break;
+          case "Monthly":
+            payCycle = 12;
+            break;
+          case "Annual":
+            payCycle = 1;
+            break;
+        }
+
         const amount = payroll.amount;
         // Calculate the payroll for the user
         const response = await fetch(
@@ -224,7 +245,7 @@ const create = asyncHandler(async (req, res) => {
             referrerPolicy: "strict-origin-when-cross-origin",
             body:
               '{"province":"ON","annualPayPeriods":' +
-              paycycle +
+              payCycle +
               ',"birthDate":" ","federalTD1":{"totalClaimAmount":1,"noIncomeTaxDeductions":false,"HD":0,"L":0,"CRA_F1":0,"CRA_K3":0},"federalTD1X":{"I1":0,"E":0},"provincialTD1P":{"totalClaimAmount":1,"noIncomeTaxDeductions":false,"CRA_K3P":0,"CRA_Y":0},"exemptions":{"CPP":false,"EI":false,"PPIP":false},"ytdPayroll":{"ytdIncome":{"wages":0,"pension":0,"vacationPay":0,"bonus":0,"comm":0,"txCashBenefits":0,"txNonCashBenefits":0},"ytdDeductions":{"CPP":0,"EI":0,"PPIP":0,"ITD":0,"LSFp":0,"LSFpProv":0,"LSFp_P":0,"F":0,"U1":0,"F2":0,"L":0}},"currentPayroll":{"payDate":"2023-04-27","calcType":1,"calcMethod":0,"payPeriod":0,"cntPP":0,"noCppBasicExemption":false,"employerEIfactor":0,"income":{"wages":"' +
               amount +
               '","vacationPay":0,"retroPayPeriods":1,"daysSincePrevCommPmt":0,"txCashBenefits":0,"txNonCashBenefits":0},"deductions":{"F":0,"U1":0,"F2":0,"bonus":0,"retroPay":0}}}',
@@ -299,6 +320,7 @@ const create = asyncHandler(async (req, res) => {
             ...payroll,
             hours: payroll.hours,
             extraPay: payroll.extraPay,
+            payCycle: salary.payCycle,
             payRate: salary.wage,
             netAmount: netAmount,
             totalDeductions: totalDeductions,

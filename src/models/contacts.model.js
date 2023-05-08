@@ -53,7 +53,14 @@ const contactSchema = new Schema({
     },
     payCycle: {
       type: String,
-      enum: ["Weekly", "Bi-weekly"],
+      enum: [
+        "Daily",
+        "Weekly",
+        "Bi-Weekly",
+        "Semi-Monthly",
+        "Monthly",
+        "Annual",
+      ],
       default: "Weekly",
       required: true,
     },
