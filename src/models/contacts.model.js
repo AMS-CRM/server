@@ -40,6 +40,11 @@ const contactSchema = new Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["Active", "Terminated", "In-active"],
+    required: true,
+  },
   salary: {
     salaryType: {
       type: String,

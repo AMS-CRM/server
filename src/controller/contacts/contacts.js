@@ -99,8 +99,9 @@ const getContacts = asyncHandler(async (req, res) => {
   try {
     // Get the list of all contacts from a particular user
     const getContacts = await contacts
-      .find({ user: user, ...query })
+      .find({ user: user, ...query, status: "Active" })
       .skip(STARTIN_POINT)
+      .sort("status")
       .limit(PAGE_LIMIT);
 
     // Get the total count of the all contacts
@@ -137,7 +138,10 @@ const deleteContact = asyncHandler(async (req, res) => {
   const { _id } = req.body;
 
   try {
-    const deleteContactForUser = await contacts.remove({ user, _id });
+    const deleteContactForUser = await contacts.findOneAndUpdate(
+      { _id },
+      { status: "Terminated" }
+    );
 
     if (deleteContactForUser.deletedCount == 0 || !deleteContactForUser) {
       res.status(400).setCode(445);
@@ -242,6 +246,7 @@ const getContactWithEmail = asyncHandler(async (req, res) => {
           dob: 1,
           createdOn: 1,
           email: 1,
+          status: 1,
           payroll: 1,
           _id: 1,
         },
