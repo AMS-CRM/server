@@ -12,6 +12,11 @@ const approve = [
   body("payroll").not().isEmpty().withMessage("Payroll is required"),
 ];
 
+const payrollBreakdown = [
+  body("employeeId").not().isEmpty().withMessage("Employee is required"),
+  body("payrollNo").not().isEmpty().withMessage("Payroll is required"),
+];
+
 const create = [
   body("user").isArray().withMessage("User are required"),
   body("firstName")
@@ -45,4 +50,5 @@ module.exports = {
   approve,
   getPayrollData,
   paySubDownloadLink,
+  payrollBreakdown,
 };

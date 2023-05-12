@@ -126,7 +126,7 @@ const create = asyncHandler(async (req, res) => {
     const { _id: user } = req.user;
     let { selectAll, user: users, ...search } = matchedData(req);
     let searchKey = Object.keys(search)[0];
-
+    let searchQuery = {};
     if (searchKey != undefined) {
       search = {
         [searchKey]: new RegExp(`.*${search[searchKey]}.*`, "i"),
@@ -157,11 +157,10 @@ const create = asyncHandler(async (req, res) => {
     if (!selectAll && users.length > 0) {
       searchQuery = { _id: { $in: usersIds } };
     }
-    console.log(search);
 
     // Get the list of the users
     const usersList = await Contacts.find(
-      { ...searchQuery, ...search },
+      { ...searchQuery, ...search, status: "Active" },
       {
         _id: 1,
         email: 1,
@@ -425,6 +424,37 @@ const paySubDownloadLink = asyncHandler(async (req, res) => {
   }
 });
 
+// Get the breakdown of a individual payroll
+const payrollBreakdown = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(757).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { payrollNo, employeeId } = req.body;
+    // Search a particular payroll
+    const searchPayroll = await Payroll.find(
+      {
+        user: req.user._id,
+        payrollNo,
+        "payroll.user": employeeId,
+      },
+      { "payroll.$": 1, createdOn: 1 }
+    ).populate("payroll.user");
+    console.log(searchPayroll);
+    if (!searchPayroll) {
+      res.status(400).setCode(394);
+      throw new Error("Cannot find the payroll for this user");
+    }
+
+    return res.setCode(485).setPayload(searchPayroll).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // Get the list of the payrolls
 const list = asyncHandler(async (req, res) => {
   try {
@@ -450,4 +480,5 @@ module.exports = {
   approve,
   getPayrollData,
   paySubDownloadLink,
+  payrollBreakdown,
 };

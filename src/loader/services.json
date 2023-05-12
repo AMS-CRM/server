@@ -12,5 +12,6 @@
   "organizations": "/organizations/index.js",
   "transactions": "/transactions/transactions.js",
   "payroll": "/payrolls/payroll.js",
-  "dashboard": "/dashboard/index.js"
+  "dashboard": "/dashboard/index.js",
+  "webhooks": "/webhooks/vopay.js"
 }

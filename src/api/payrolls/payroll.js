@@ -15,6 +15,20 @@ router.post("/", protect, validation.create, controller.create);
 
 /**
  *
+ * @API     POST /payroll/single
+ * @Desc    Get the employee level breakdown of a payroll
+ * @Access  Private
+ *
+ */
+router.post(
+  "/single",
+  protect,
+  validation.payrollBreakdown,
+  controller.payrollBreakdown
+);
+
+/**
+ *
  * @API     POST /payroll/paystub
  * @Desc    Generate the paystub download link
  * @Access  Private
