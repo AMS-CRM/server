@@ -58,20 +58,26 @@ const createContact = asyncHandler(async (req, res) => {
 
   try {
     // Check if the contact already exits
-    const checkContact = await contacts.findOne({
+    const checkContact = await contacts.find({
       $or: [
         {
           email: email,
         },
         {
-          phone: phone,
+          "phone.number": phone,
+        },
+        {
+          employeeId: employeeId,
         },
       ],
     });
+    console.log(checkContact);
 
-    if (checkContact) {
+    if (checkContact.length != 0) {
       res.status(400).setCode(543);
-      throw new Error("Contact already exists with same phone or email");
+      throw new Error(
+        "Contact already exists with same Phone Number, Employee Id or email"
+      );
     }
 
     const contact = await contacts.create(data);

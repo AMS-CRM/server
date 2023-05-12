@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const { validationResult } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
 const Payroll = require("../../models/payrolls.model");
 const Contacts = require("../../models/contacts.model");
 const fetch = require("node-fetch");
@@ -124,7 +124,15 @@ const create = asyncHandler(async (req, res) => {
 
   try {
     const { _id: user } = req.user;
-    const { selectAll, user: users } = req.body;
+    let { selectAll, user: users, ...search } = matchedData(req);
+    let searchKey = Object.keys(search)[0];
+
+    if (searchKey != undefined) {
+      search = {
+        [searchKey]: new RegExp(`.*${search[searchKey]}.*`, "i"),
+      };
+    }
+
     let query = {
       users,
       status: "include",
@@ -142,9 +150,6 @@ const create = asyncHandler(async (req, res) => {
       return mongoose.Types.ObjectId(id);
     });
 
-    // Set the query for user search
-    let searchQuery = {};
-
     if (selectAll && users.length > 0) {
       searchQuery = { _id: { $nin: usersIds } };
     }
@@ -152,16 +157,20 @@ const create = asyncHandler(async (req, res) => {
     if (!selectAll && users.length > 0) {
       searchQuery = { _id: { $in: usersIds } };
     }
+    console.log(search);
 
     // Get the list of the users
-    const usersList = await Contacts.find(searchQuery, {
-      _id: 1,
-      email: 1,
-      firstName: 1,
-      lastName: 1,
-      payroll: 1,
-      salary: 1,
-    });
+    const usersList = await Contacts.find(
+      { ...searchQuery, ...search },
+      {
+        _id: 1,
+        email: 1,
+        firstName: 1,
+        lastName: 1,
+        payroll: 1,
+        salary: 1,
+      }
+    );
 
     if (!usersList) {
       res.stutus(400).setCode(384);

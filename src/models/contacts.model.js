@@ -43,6 +43,7 @@ const contactSchema = new Schema({
   status: {
     type: String,
     enum: ["Active", "Terminated", "In-active"],
+    default: "Active",
     required: true,
   },
   salary: {

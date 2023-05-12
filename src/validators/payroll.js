@@ -13,6 +13,19 @@ const approve = [
 ];
 
 const create = [
+  body("user").isArray().withMessage("User are required"),
+  body("firstName")
+    .optional()
+    .isString()
+    .withMessage("Search query can only be a string"),
+  body("employeeId")
+    .optional()
+    .isString()
+    .withMessage("Search query can only be a string"),
+  body("email")
+    .optional()
+    .isString()
+    .withMessage("Search query can only be a string"),
   body("selectAll")
     .not()
     .isEmpty()
