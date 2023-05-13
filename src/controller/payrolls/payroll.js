@@ -40,18 +40,20 @@ const getPayrollData = asyncHandler(async (req, res) => {
     const payrollData = await Payroll.findOne({
       user,
       payrollNo: payroll,
-    }).populate({
-      path: "payroll",
-      populate: {
-        path: "user",
-        select: {
-          _id: 0,
-          email: 1,
-          firstName: 1,
-          lastName: 1,
+    })
+      .populate({
+        path: "payroll",
+        populate: {
+          path: "user",
+          select: {
+            _id: 1,
+            email: 1,
+            firstName: 1,
+            lastName: 1,
+          },
         },
-      },
-    });
+      })
+      .populate("payroll.transactionRef");
 
     if (!payrollData) {
       res.status(400).setCode(349);
@@ -102,7 +104,7 @@ const approve = asyncHandler(async (req, res) => {
         },
       }
     );
-
+    console.log(payrollRequest);
     if (!payrollRequest) {
       throw new Error("Request failed");
     }
@@ -435,14 +437,16 @@ const payrollBreakdown = asyncHandler(async (req, res) => {
   try {
     const { payrollNo, employeeId } = req.body;
     // Search a particular payroll
-    const searchPayroll = await Payroll.find(
+    const searchPayroll = await Payroll.findOne(
       {
         user: req.user._id,
         payrollNo,
         "payroll.user": employeeId,
       },
       { "payroll.$": 1, createdOn: 1 }
-    ).populate("payroll.user");
+    )
+      .populate("payroll.user")
+      .populate("payroll.transactionRef");
 
     if (!searchPayroll) {
       res.status(400).setCode(394);
