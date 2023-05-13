@@ -1,16 +1,5 @@
 const { body, param } = require("express-validator");
-
-// Validation custom function to check if the given amount is corrent number
-const checkNumValue = (numValue) => {
-  const number = isNaN(numValue);
-  if (number) {
-    throw new Error("Incorrect amount");
-  }
-  if (parseInt(numValue) <= 0) {
-    throw new Error("Incorrect amount");
-  }
-  return true;
-};
+const checkNumValue = require("../utils/checkNumValue");
 
 const getContactWithEmail = [
   param("email").not().isEmpty().withMessage("Email address is required"),
