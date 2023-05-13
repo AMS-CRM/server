@@ -23,7 +23,8 @@ const etransfer = asyncHandler(async (req, res) => {
     const { _id: user, name } = req.user;
 
     // Get the req data
-    const { to, transactionId, securityQuestion, securityAnswer } = req.body;
+    const { to, transactionId, payroll, securityQuestion, securityAnswer } =
+      req.body;
     const amount = parseInt(req.body.amount);
 
     // For now we only allow transfer to user account
@@ -78,6 +79,7 @@ const etransfer = asyncHandler(async (req, res) => {
       type: "E-transfer",
       amount,
       transactionId,
+      payroll,
       status: "Pending",
       security: {
         question: securityQuestion,

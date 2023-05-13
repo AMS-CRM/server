@@ -15,7 +15,8 @@ const amountValidationCheck = (amount) => {
 
 // Validate the etransfer
 const etransfer = [
-  body("to").isEmail().withMessage("Provide a valid email address"),
+  body("to").not().isEmpty().withMessage("Provide a valid user"),
+  body("payroll").not().isEmpty().withMessage("Payroll ID is required"),
   body("transactionId")
     .not()
     .isEmpty()
