@@ -24,13 +24,13 @@ router.post(
   "/vopay",
   asyncHandler(async (req, res) => {
     const { TransactionID, ValidationKey } = req.body;
-
+    console.log(req.body);
     const validationKeyResult = await calculateValidationKey(TransactionID);
+    console.log(validationKeyResult);
     if (ValidationKey != validationKeyResult) {
       res.status(400).setCode(987);
       throw new Error("Validation error");
     }
-    console.log(req.body);
     return res.status(200).setCode(43).respond();
   })
 );
