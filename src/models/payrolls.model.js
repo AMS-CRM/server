@@ -52,7 +52,7 @@ const payrollsSchema = new Schema({
         type: String,
       },
       transactionRef: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "transactions",
       },
       data: {
