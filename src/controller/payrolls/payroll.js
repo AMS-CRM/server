@@ -443,7 +443,7 @@ const payrollBreakdown = asyncHandler(async (req, res) => {
       },
       { "payroll.$": 1, createdOn: 1 }
     ).populate("payroll.user");
-    console.log(searchPayroll);
+
     if (!searchPayroll) {
       res.status(400).setCode(394);
       throw new Error("Cannot find the payroll for this user");

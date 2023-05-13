@@ -51,6 +51,10 @@ const payrollsSchema = new Schema({
       payStub: {
         type: String,
       },
+      transactionRef: {
+        type: String,
+        ref: "transactions",
+      },
       data: {
         totalDeductions: {
           type: Number,

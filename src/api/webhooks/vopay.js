@@ -4,6 +4,7 @@ const router = express.Router();
 // For the controller
 const asyncHandler = require("express-async-handler");
 const crypto = require("crypto");
+const transaction = require("../../models/transaction.model");
 
 // Function to calculate the vopay validation key
 const calculateValidationKey = async (TransactionID) => {
@@ -23,14 +24,28 @@ const calculateValidationKey = async (TransactionID) => {
 router.post(
   "/vopay",
   asyncHandler(async (req, res) => {
-    const { TransactionID, ValidationKey } = req.body;
-    console.log(req.body);
+    const { TransactionID, ValidationKey, Status } = req.body;
+
     const validationKeyResult = await calculateValidationKey(TransactionID);
-    console.log(validationKeyResult);
+
     if (ValidationKey != validationKeyResult) {
       res.status(400).setCode(987);
       throw new Error("Validation error");
     }
+
+    // Add the transaction to the database
+    const updateTransaction = await transaction.findOneAndUpdate(
+      { transactionId: TransactionID },
+      {
+        status: Status,
+      }
+    );
+
+    if (!updateTransaction) {
+      res.status(400).setCode(385);
+      throw new Error("Cannot update the transaction");
+    }
+
     return res.status(200).setCode(43).respond();
   })
 );

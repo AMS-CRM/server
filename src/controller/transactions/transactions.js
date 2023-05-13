@@ -80,7 +80,7 @@ const etransfer = asyncHandler(async (req, res) => {
       amount,
       transactionId,
       payroll,
-      status: "Pending",
+      status: "pending",
       security: {
         question: securityQuestion,
         answer: securityAnswer,
