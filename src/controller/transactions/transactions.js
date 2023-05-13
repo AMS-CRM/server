@@ -26,7 +26,7 @@ const etransfer = asyncHandler(async (req, res) => {
     const { to, transactionId, payroll, securityQuestion, securityAnswer } =
       req.body;
     const amount = parseFloat(req.body.amount).toFixed(2);
-    console.log(amount);
+
     // For now we only allow transfer to user account
     // Note: This feature was basically designed for the app where user can transfer the virutal currrency
     /* if (to != senderEmail) {

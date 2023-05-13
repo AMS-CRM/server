@@ -30,6 +30,7 @@ router.post(
       res.status(400).setCode(987);
       throw new Error("Validation error");
     }
+    console.log(req.body);
     return res.status(200).setCode(43).respond();
   })
 );
