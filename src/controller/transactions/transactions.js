@@ -10,7 +10,7 @@ const {
   emailNotifications,
 } = require("../../utils/notifications");
 
-// E-transager
+// E-transfer
 const etransfer = asyncHandler(async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -20,19 +20,21 @@ const etransfer = asyncHandler(async (req, res) => {
     }
 
     // Get the user data
-    const { _id: user, name, email: senderEmail } = req.user;
+    const { _id: user, name } = req.user;
+
     // Get the req data
     const { to, securityQuestion, securityAnswer } = req.body;
     const amount = parseInt(req.body.amount);
 
     // For now we only allow transfer to user account
-    if (to != senderEmail) {
+    // Note: This feature was basically designed for the app where user can transfer the virutal currrency
+    /* if (to != senderEmail) {
       res
         .status(400)
         .setCode(395)
         .setPayload([{ param: "to", msg: "Use your own email" }]);
       throw new Error("Invalid user email");
-    }
+    } */
 
     // Check if the user have enough balance
     const balance = (
@@ -71,10 +73,11 @@ const etransfer = asyncHandler(async (req, res) => {
 
     // Initate the transfer
     const transferData = {
-      to: user,
-      from: user,
-      type: "etransfer",
+      to: to, // Should be the contact ID
+      from: user, // Should be employeer ID
+      type: "E-transfer",
       amount,
+      transactionId,
       status: "Pending",
       security: {
         question: securityQuestion,
@@ -90,7 +93,8 @@ const etransfer = asyncHandler(async (req, res) => {
     }
 
     // Send the nofication email
-    emailNotifications(name, to, name, amount, process.env.TRANSFER_TEMPLATE);
+    // We are skipping this part for now
+    // emailNotifications(name, to, name, amount, process.env.TRANSFER_TEMPLATE);
 
     return res.status(200).setPayload(transfer).setCode(847).respond();
   } catch (error) {
@@ -134,7 +138,6 @@ const getTransaction = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).setCode(475).setPayload(transaction).respond();
-    
   } catch (error) {
     throw new Error(error);
   }

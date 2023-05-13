@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const transactionSchema = new Schema({
   to: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "contact",
     required: true,
   },
   from: {
@@ -12,13 +12,22 @@ const transactionSchema = new Schema({
     ref: "user",
     required: true,
   },
+  payroll: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "payrolls",
+    required: true,
+  },
   type: {
     type: String,
-    enum: ["etransfer", "Pay"],
+    enum: ["E-transfer", "CHQ"],
     required: true,
   },
   amount: {
     type: Number,
+    required: true,
+  },
+  transactionId: {
+    type: String,
     required: true,
   },
   status: {
