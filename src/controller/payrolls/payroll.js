@@ -104,7 +104,7 @@ const approve = asyncHandler(async (req, res) => {
         },
       }
     );
-    console.log(payrollRequest);
+
     if (!payrollRequest) {
       throw new Error("Request failed");
     }
@@ -384,12 +384,16 @@ const paySubDownloadLink = asyncHandler(async (req, res) => {
     // Get the paystub file name
     const { userId, payrollId } = req.body;
 
-    const findPayStub = await Payroll.findOne({
-      user: req.user._id,
-      _id: payrollId,
-      "payroll.user": userId,
-      "payroll.payStub": { $exists: true },
-    }).populate("payroll.user");
+    const findPayStub = await Payroll.findOne(
+      {
+        user: req.user._id,
+        _id: payrollId,
+        $and: [{ "payroll.user": userId }],
+      },
+      { "payroll.$": 1, payrollNo: 1 }
+    ).populate("payroll.user");
+
+    console.log(JSON.stringify(findPayStub));
 
     if (!findPayStub) {
       throw new Error("Cannot find the payroll");
@@ -411,7 +415,7 @@ const paySubDownloadLink = asyncHandler(async (req, res) => {
       new GetObjectCommand({
         Bucket: "paystub",
         Key: findPayStub.payroll[0].payStub,
-        ResponseContentDisposition: `attachment; filename="Payroll${findPayStub.payrollNo}-${findPayStub.payroll[0].user.firstName} ${findPayStub.payroll[0].user.lastName}.pdf"`,
+        ResponseContentDisposition: `attachment; filename="Payroll-${findPayStub.payrollNo}-${findPayStub.payroll[0].user.firstName} ${findPayStub.payroll[0].user.lastName}.pdf"`,
       }),
       { expiresIn: 15 * 60 }
     ); // Adjustable expiration.

@@ -149,25 +149,44 @@ const getTransaction = asyncHandler(async (req, res) => {
 const listTransactions = asyncHandler(async (req, res) => {
   try {
     const userId = req.user._id;
+    let page = req.params.page;
+
+    // Number of lists per page
+
+    const limit = process.env.PAGE_LIMIT || 10;
+    const start = !parseInt(page) ? 0 : page * limit - limit;
+
     // Get the list of transfers
     const transactions = await Transaction.find({
       $or: [{ to: userId }, { from: userId }],
     })
       .populate({
+        path: "payroll",
+      })
+      .populate({
         path: "to",
-        select: ["email", "name"],
+        select: ["email", "firstName", "lastName"],
       })
       .populate({
         path: "from",
         select: ["name", "email"],
-      });
+      })
+      .skip(start)
+      .limit(limit);
 
     if (!transactions) {
       res.status(400).setCode(354);
       throw new Error("User does not have any trasactions");
     }
 
-    return res.status(200).setCode(684).setPayload(transactions).respond();
+    // Count the total transactions
+    const count = await Transaction.count({});
+
+    return res
+      .status(200)
+      .setCode(684)
+      .setPayload({ list: transactions, count })
+      .respond();
   } catch (error) {
     throw new Error(error);
   }

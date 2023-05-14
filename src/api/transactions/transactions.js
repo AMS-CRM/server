@@ -19,7 +19,7 @@ router.post("/etransfer", protect, validator.etransfer, controller.etransfer);
  * @Desc    Get the list of all transactions for a user
  * @access  PRIVATE
  */
-router.get("/list", protect, controller.listTransactions);
+router.get("/list/:page", protect, controller.listTransactions);
 
 /**
  *

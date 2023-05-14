@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const transactionSchema = new Schema({
   to: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "contact",
+    ref: "contacts",
     required: true,
   },
   from: {
