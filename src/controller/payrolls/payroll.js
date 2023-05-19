@@ -86,11 +86,19 @@ const approve = asyncHandler(async (req, res) => {
       {
         status: "Pending",
       }
-    );
+    ).populate("user");
 
     if (!approve) {
       res.status(400).setCode(349);
       throw new Error("No payroll found for this user");
+    }
+
+    // Check if the user have enough balance to run the payroll
+    const balanceCheck =
+      approve.payrollSummary.grossAmount > approve.user.balance;
+
+    if (balanceCheck) {
+      throw new Error("You don't have enough balance to run the payroll");
     }
 
     // Send the payroll request with the payroll id
@@ -111,6 +119,7 @@ const approve = asyncHandler(async (req, res) => {
 
     return res.status(200).setCode(400).setPayload(approve).respond();
   } catch (error) {
+    res.status(400).setCode(343).setPayload(error);
     throw new Error(error);
   }
 });

@@ -1,8 +1,9 @@
 const asyncHandler = require("express-async-handler");
-const { validationResult } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
 const mongoose = require("mongoose");
 const { UserRolesContext } = require("twilio/lib/rest/flexApi/v1/userRoles");
 const Transaction = require("../../models/transaction.model");
+const Payrolls = require("../../models/payrolls.model");
 const User = require("../../models/user.model");
 const credit = require("../../utils/accountBalance.js");
 const {
@@ -149,16 +150,15 @@ const getTransaction = asyncHandler(async (req, res) => {
 const listTransactions = asyncHandler(async (req, res) => {
   try {
     const userId = req.user._id;
-    let page = req.params.page;
-
-    // Number of lists per page
+    let { page, ...rest } = matchedData(req);
 
     const limit = process.env.PAGE_LIMIT || 10;
     const start = !parseInt(page) ? 0 : page * limit - limit;
 
     // Get the list of transfers
     const transactions = await Transaction.find({
-      $or: [{ to: userId }, { from: userId }],
+      from: userId,
+      ...rest,
     })
       .populate({
         path: "payroll",
@@ -180,12 +180,13 @@ const listTransactions = asyncHandler(async (req, res) => {
     }
 
     // Count the total transactions
-    const count = await Transaction.count({});
+    const count = await Transaction.count({ from: userId, ...rest });
+    const payrollsList = await Payrolls.find({}, { payrollNo: 1 });
 
     return res
       .status(200)
       .setCode(684)
-      .setPayload({ list: transactions, count })
+      .setPayload({ list: transactions, count, payrollsList })
       .respond();
   } catch (error) {
     throw new Error(error);

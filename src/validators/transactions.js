@@ -1,5 +1,6 @@
 const { body, param } = require("express-validator");
 const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
 const checkNumValue = require("../utils/checkNumValue");
 
 // Validate the etransfer
@@ -48,8 +49,19 @@ const create = [
   body("amount").custom((amount) => amountValidationCheck(amount)),
 ];
 
+// Validator for getting the list of transactions
+const list = [
+  body("page").optional().isNumeric().withMessage("Page should be a string"),
+  body("status").optional().isString().withMessage("Status should be a string"),
+  body("payroll")
+    .optional()
+    .isString()
+    .withMessage("Payroll should be a string"),
+];
+
 module.exports = {
   create,
   etransfer,
+  list,
   transaction,
 };
