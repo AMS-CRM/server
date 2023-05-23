@@ -54,6 +54,7 @@ const createContact = [
     .not()
     .isEmpty()
     .withMessage("Phone is required")
+    .custom((phone) => phone.match(/^\d{10}$/))
     .trim()
     .escape(),
   body("nationality")
