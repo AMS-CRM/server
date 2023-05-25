@@ -1,5 +1,6 @@
 const { body, param } = require("express-validator");
 const checkNumValue = require("../utils/checkNumValue");
+const Contact = require("../models/contacts.model");
 
 const getContactWithEmail = [
   param("email").not().isEmpty().withMessage("Email address is required"),
@@ -95,23 +96,42 @@ const editContact = [
     .optional()
     .custom((amount) => checkNumValue(amount))
     .toFloat(),
-  body("salary.payCycle")
+  body("salary.payCycle").optional().isString().withMessage("Invalid value"),
+  body("salary.bankAccount.accountNo")
     .optional()
-
+    .not()
+    .isEmpty()
+    .withMessage("Invalid bank account number"),
+  body("salary.bankAccount.transitNo")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Invalid transit number"),
+  body("salary.transferMethod")
+    .optional()
     .isString()
-    .withMessage("Invalid value"),
+    .withMessage("Invalid value")
+    .custom(async (value, { req }) => {
+      // Check if the direct depost details exists
+      if (value == "Direct Deposit") {
+        //console.log(req.body.user);
+        const res = await Contact.findOne({
+          _id: req.body.user,
+          $and: [
+            { "salary.bankAccount.accountNo": { $exists: true, $ne: "" } },
+            { "salary.bankAccount.transitNo": { $exists: true, $ne: "" } },
+          ],
+        });
+        if (!res) {
+          throw new Error("Bank details are missing");
+        }
+      }
+
+      return true;
+    }),
   body("payroll.extraPay")
     .optional()
-    .custom((amount) => {
-      const number = isNaN(amount);
-      if (number) {
-        throw new Error("Incorrect amount");
-      }
-      if (parseInt(amount) < 0) {
-        throw new Error("Incorrect amount");
-      }
-      return true;
-    })
+    .custom((amount) => checkNumValue(amount))
     .toFloat(),
   body("payroll.securityQuestion")
     .optional()

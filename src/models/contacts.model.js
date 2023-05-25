@@ -49,8 +49,22 @@ const contactSchema = new Schema({
   salary: {
     salaryType: {
       type: String,
-      enum: ["Hourly"],
+      enum: ["Hourly", "Anually"],
       default: "Hourly",
+    },
+    transferMethod: {
+      type: String,
+      enum: ["E-transfer", "CHQ", "Direct Deposit"],
+      required: true,
+      default: "CHQ",
+    },
+    bankAccount: {
+      accountNo: {
+        type: String,
+      },
+      transitNo: {
+        type: String,
+      },
     },
     wage: {
       type: Number,
@@ -78,7 +92,7 @@ const contactSchema = new Schema({
     },
     securityAnswer: {
       type: String,
-      default: "4",
+      default: "8",
     },
     hours: {
       type: Number,

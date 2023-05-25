@@ -19,7 +19,7 @@ const transactionSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["E-transfer", "CHQ"],
+    enum: ["E-transfer", "CHQ", "Direct Deposit"],
     required: true,
   },
   amount: {
