@@ -133,14 +133,7 @@ const payrollsSchema = new Schema({
   ],
   status: {
     type: String,
-    enum: [
-      "InProgress",
-      "Completed",
-      "Failed",
-      "Cancelled",
-      "Scheduled",
-      "UnderReview",
-    ],
+    enum: ["Under Review", "Pending", "Processing", "Completed", "Error"],
     default: "Under Review",
   },
   createdOn: {

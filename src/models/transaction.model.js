@@ -32,7 +32,14 @@ const transactionSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["successful", "pending", "in progress", "failed", "cancelled"],
+    enum: [
+      "InProgress",
+      "Completed",
+      "Failed",
+      "Cancelled",
+      "Scheduled",
+      "UnderReview",
+    ],
   },
   security: {
     question: {
