@@ -81,7 +81,7 @@ const etransfer = asyncHandler(async (req, res) => {
       amount,
       transactionId,
       payroll,
-      status: "pending",
+      status: "UnderReview",
       security: {
         question: securityQuestion,
         answer: securityAnswer,
