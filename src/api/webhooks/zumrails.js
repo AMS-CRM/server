@@ -35,23 +35,22 @@ router.post(
       console.log("ValidationKey", ValidationKey);
       console.log("validationKeyResult", validationKeyResult);
 
-      console.log(req.body);
+      if (req.body.type == "Transaction") {
+        const updateTransaction = await transaction.findOneAndUpdate(
+          { transactionId: req.body.data.Id },
+          {
+            status: req.body.data.TransactionStatus,
+          }
+        );
 
-      // Add the transaction to the database
-      /*const updateTransaction = await transaction.findOneAndUpdate(
-        { transactionId: TransactionID },
-        {
-          status: Status,
+        if (!updateTransaction) {
+          res.status(400).setCode(385);
+          throw new Error("Cannot update the transaction");
         }
-      );
 
-      if (!updateTransaction) {
-        res.status(400).setCode(385);
-        throw new Error("Cannot update the transaction");
+        console.log(req.body);
+        return res.status(200).setCode(43).respond();
       }
-      console.log(req.body);
-
-      return res.status(200).setCode(43).respond(); */
     } catch (error) {
       console.log(error);
     }
