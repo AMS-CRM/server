@@ -23,8 +23,6 @@ const subtract = (...args) => {
   return result / 100;
 };
 
-662 * 100 - 0;
-
 // Get the details of an individual payroll
 const getPayrollData = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -260,7 +258,6 @@ const create = asyncHandler(async (req, res) => {
               "sec-fetch-site": "cross-site",
               "x-api-key": "AZWjxlCDYZ8DSDLEOJt1w4pZb0WhzVvO1fboG2iX",
             },
-            referrer: "https://www.adp.ca/",
             referrerPolicy: "strict-origin-when-cross-origin",
             body:
               '{"province":"ON","annualPayPeriods":' +

@@ -46,7 +46,7 @@ const create = [
     .withMessage("Please provide a valid email address")
     .trim()
     .escape(),
-  body("amount").custom((amount) => amountValidationCheck(amount)),
+  body("amount").custom((amount) => checkNumValue(amount)),
 ];
 
 // Validator for getting the list of transactions

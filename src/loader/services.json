@@ -13,5 +13,5 @@
   "transactions": "/transactions/transactions.js",
   "payroll": "/payrolls/payroll.js",
   "dashboard": "/dashboard/index.js",
-  "webhooks": "/webhooks/vopay.js"
+  "webhooks": "/webhooks/zumrails.js"
 }

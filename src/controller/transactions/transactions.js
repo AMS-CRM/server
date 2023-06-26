@@ -203,7 +203,7 @@ const create = asyncHandler(async (req, res) => {
       throw new Error("Validation error");
     }
 
-    const { to } = req.body;
+    const { to, transactionId } = req.body;
     const amount = parseInt(req.body.amount);
     const { _id: user } = req.user._id;
 
@@ -236,9 +236,9 @@ const create = asyncHandler(async (req, res) => {
       throw new Error("Cannot initate transfer for the email provided");
     }
 
-    if (receiver._id.valueOf() == user.valueOf()) {
+    /* if (receiver._id.valueOf() == user.valueOf()) {
       throw new Error("You cannot send money to yourself");
-    }
+    }*/
 
     const senderDebit = balance - amount;
     const senderBalance = senderDebit <= 0 ? 0 : senderDebit;
@@ -248,8 +248,10 @@ const create = asyncHandler(async (req, res) => {
       to: receiver._id,
       from: user,
       amount: amount,
-      type: "Pay",
-      status: "Success",
+      transactionId,
+      payroll: "646a71e7f70f6bafc88986d0",
+      type: "E-transfer",
+      status: "pending",
     });
 
     if (!transaction) {
