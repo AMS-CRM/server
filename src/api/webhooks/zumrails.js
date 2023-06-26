@@ -23,9 +23,9 @@ router.post(
 
       let key = process.env.WEBHOOK_KEY;
       let payload = JSON.stringify(req.body);
-      var validationKeyResult = crypto
-        .createHmac("sha256", key)
-        .update(payload);
+      var hash = crypto.createHmac("sha256", key).update(payload);
+
+      const validationKeyResult = hash.digest("base64");
 
       if (ValidationKey != validationKeyResult) {
         res.status(400).setCode(987);
