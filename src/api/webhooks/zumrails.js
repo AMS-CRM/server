@@ -35,7 +35,7 @@ router.post(
       console.log("ValidationKey", ValidationKey);
       console.log("validationKeyResult", validationKeyResult);
 
-      if (req.body.type == "Transaction") {
+      if (req.body.Type == "Transaction") {
         const updateTransaction = await transaction.findOneAndUpdate(
           { transactionId: req.body.Data.Id },
           {
