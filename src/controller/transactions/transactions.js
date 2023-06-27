@@ -17,7 +17,7 @@ const etransfer = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).setPayload(errors.array()).setCode(748);
-      throw new Error("Validation erro");
+      throw new Error("Validation error");
     }
 
     // Get the user data

@@ -282,8 +282,11 @@ const create = asyncHandler(async (req, res) => {
           responseJson.employeePayrollDeductions.EI,
           responseJson.employeePayrollDeductions.ITD
         );
-        const netAmount = subtract(amount, totalDeductions);
+
+        const netAmount = subtract(amount, totalDeductions).toFixed(2);
+
         grossAmount = add(amount + grossAmount);
+
         // Calulate the total summary for this payroll
         payrollSummary.ITD = add(
           payrollSummary.ITD,
@@ -309,8 +312,9 @@ const create = asyncHandler(async (req, res) => {
           payrollSummary.totalDeductions,
           totalDeductions
         ); // totalDeductions;
+
         payrollSummary.netAmount = add(payrollSummary.netAmount, netAmount); // netAmount;
-        payrollSummary.grossAmount = grossAmount; // payroll.amount;
+        payrollSummary.grossAmount = grossAmount; // payroll.amount
 
         responseData.push({
           name: `${firstName} ${lastName}`,
