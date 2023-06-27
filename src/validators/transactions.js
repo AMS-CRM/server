@@ -7,6 +7,20 @@ const checkNumValue = require("../utils/checkNumValue");
 const etransfer = [
   body("to").not().isEmpty().withMessage("Provide a valid user"),
   body("payroll").not().isEmpty().withMessage("Payroll ID is required"),
+  body("transferMethod")
+    .not()
+    .isEmpty()
+    .withMessage("Transfer method is required")
+    .custom((transferMethod) => {
+      if (
+        transferMethod != "Direct Deposit" &&
+        transferMethod != "E-transfer"
+      ) {
+        throw new Error("Invalid method type");
+      }
+
+      return true;
+    }),
   body("transactionId")
     .not()
     .isEmpty()

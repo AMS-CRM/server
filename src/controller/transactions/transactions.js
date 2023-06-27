@@ -24,8 +24,14 @@ const etransfer = asyncHandler(async (req, res) => {
     const { _id: user, name } = req.user;
 
     // Get the req data
-    const { to, transactionId, payroll, securityQuestion, securityAnswer } =
-      req.body;
+    const {
+      to,
+      transactionId,
+      payroll,
+      securityQuestion,
+      securityAnswer,
+      transferMethod,
+    } = req.body;
     const amount = parseFloat(req.body.amount).toFixed(2);
 
     // For now we only allow transfer to user account
@@ -77,7 +83,7 @@ const etransfer = asyncHandler(async (req, res) => {
     const transferData = {
       to: to, // Should be the contact ID
       from: user, // Should be employeer ID
-      type: "E-transfer",
+      type: transferMethod,
       amount,
       transactionId,
       payroll,
