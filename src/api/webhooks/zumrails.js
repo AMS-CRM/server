@@ -37,9 +37,9 @@ router.post(
 
       if (req.body.type == "Transaction") {
         const updateTransaction = await transaction.findOneAndUpdate(
-          { transactionId: req.body.data.Id },
+          { transactionId: req.body.Data.Id },
           {
-            status: req.body.data.TransactionStatus,
+            status: req.body.Data.TransactionStatus,
           }
         );
 
