@@ -18,6 +18,7 @@ router.post(
   asyncHandler(async (req, res) => {
     try {
       console.log(req.headers);
+      console.log(req.body);
 
       const ValidationKey = req.headers["zumrails-signature"];
 
