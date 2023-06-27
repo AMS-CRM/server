@@ -143,7 +143,16 @@ const editContact = [
     }),
   body("payroll.extraPay")
     .optional()
-    .custom((amount) => checkNumValue(amount))
+    .custom((amount) => {
+      const number = isNaN(amount);
+      if (number || amount == "") {
+        throw new Error("Incorrect amount type");
+      }
+      if (parseInt(amount) < 0) {
+        throw new Error("Incorrect amount");
+      }
+      return true;
+    })
     .toFloat(),
   body("payroll.securityQuestion")
     .optional()
