@@ -65,6 +65,9 @@ const contactSchema = new Schema({
       transitNo: {
         type: String,
       },
+      instituteNo: {
+        type: String,
+      },
     },
     wage: {
       type: Number,

@@ -101,12 +101,23 @@ const editContact = [
     .optional()
     .not()
     .isEmpty()
-    .withMessage("Invalid bank account number"),
+    .withMessage("Invalid bank account number")
+    .isLength({ min: 5, max: 5 })
+    .withMessage("The lenght of Account number must be 5"),
   body("salary.bankAccount.transitNo")
     .optional()
     .not()
     .isEmpty()
-    .withMessage("Invalid transit number"),
+    .withMessage("Invalid transit number")
+    .isLength({ min: 5, max: 5 })
+    .withMessage("The lenght of Account number must be 5"),
+  body("salary.bankAccount.instituteNo")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Invalid transit number")
+    .isLength({ min: 3, max: 3 })
+    .withMessage("The lenght of Account number must be 3"),
   body("salary.transferMethod")
     .optional()
     .isString()
@@ -119,6 +130,7 @@ const editContact = [
           _id: req.body.user,
           $and: [
             { "salary.bankAccount.accountNo": { $exists: true, $ne: "" } },
+            { "salary.bankAccount.instituteNo": { $exists: true, $ne: "" } },
             { "salary.bankAccount.transitNo": { $exists: true, $ne: "" } },
           ],
         });
