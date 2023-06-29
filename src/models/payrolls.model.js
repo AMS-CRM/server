@@ -74,11 +74,23 @@ const payrollsSchema = new Schema({
           type: Number,
           required: false,
         },
+        overTimeHours: {
+          type: Number,
+          required: false,
+        },
         payRate: {
           type: Number,
           required: false,
         },
         extraPay: {
+          type: Number,
+          required: false,
+        },
+        bonusPay: {
+          type: Number,
+          required: false,
+        },
+        overTimePay: {
           type: Number,
           required: false,
         },

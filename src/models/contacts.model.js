@@ -97,13 +97,29 @@ const contactSchema = new Schema({
       type: String,
       default: "8",
     },
+    overTimePercentage: {
+      type: Number,
+      default: 1.5,
+    },
     hours: {
       type: Number,
       default: 0,
     },
+    overTimeHours: {
+      Type: Number,
+      required: false,
+    },
     extraPay: {
       type: Number,
       default: 0,
+    },
+    bonusPay: {
+      type: Number,
+      required: false,
+    },
+    overTimePay: {
+      type: Number,
+      required: false,
     },
     amount: {
       type: Number,

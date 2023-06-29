@@ -274,8 +274,6 @@ const create = asyncHandler(async (req, res) => {
         // Get the json response
         const responseJson = await response.json();
 
-        // Calculate the sum
-
         // Current employee calculations
         const totalDeductions = add(
           responseJson.employeePayrollDeductions.CPP,

@@ -96,6 +96,14 @@ const editContact = [
     .optional()
     .custom((amount) => checkNumValue(amount))
     .toFloat(),
+  body("payroll.overTimeHours")
+    .optional()
+    .custom((amount) => checkNumValue(amount))
+    .toFloat(),
+  body("payroll.bonusPay")
+    .optional()
+    .custom((amount) => checkNumValue(amount))
+    .toFloat(),
   body("salary.payCycle").optional().isString().withMessage("Invalid value"),
   body("salary.bankAccount.accountNo")
     .optional()
@@ -143,16 +151,7 @@ const editContact = [
     }),
   body("payroll.extraPay")
     .optional()
-    .custom((amount) => {
-      const number = isNaN(amount);
-      if (number || amount == "") {
-        throw new Error("Incorrect amount type");
-      }
-      if (parseInt(amount) < 0) {
-        throw new Error("Incorrect amount");
-      }
-      return true;
-    })
+    .custom((amount) => checkNumValue(amount))
     .toFloat(),
   body("payroll.securityQuestion")
     .optional()
