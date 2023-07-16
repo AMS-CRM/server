@@ -11,5 +11,6 @@
   "countries": "/countries/countries.js",
   "organizations": "/organizations/index.js",
   "transactions": "/transactions/transactions.js",
-  "jobs": "/jobs/jobs.js"
+  "jobs": "/jobs/jobs.js",
+  "properties": "/properties/properties.js"
 }

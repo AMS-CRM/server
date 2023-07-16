@@ -40,6 +40,25 @@ const updatePushNotificationToken = [
     .withMessage("Token is not provided"),
 ];
 
+// Update the user bank information
+const updateBankDetails = [
+  body("accountNumber")
+    .not()
+    .isEmpty()
+    .isLength({ min: 5, max: 5 })
+    .withMessage("Provide 5 digits account number"),
+  body("instituteNumber")
+    .not()
+    .isEmpty()
+    .isLength({ min: 3, max: 3 })
+    .withMessage("Provide 5 digits transit number"),
+  body("transitNumber")
+    .not()
+    .isEmpty()
+    .isLength({ min: 5, max: 5 })
+    .withMessage("Provide 3 digits transit number"),
+];
+
 /**
  * Extend the edit user and add subscription with default plan
  **/
@@ -67,4 +86,5 @@ module.exports = {
   credentials,
   updatePushNotificationStatus,
   updatePushNotificationToken,
+  updateBankDetails,
 };

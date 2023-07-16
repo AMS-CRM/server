@@ -21,6 +21,10 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  paymentsId: {
+    type: String,
+    required: false,
+  },
   type: {
     type: String,
     enum: ["admin", "user", "employee"],

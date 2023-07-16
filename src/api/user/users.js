@@ -47,4 +47,11 @@ router.patch(
   controller.updatePushNotificationToken
 );
 
+router.post(
+  "/updateBankInformation",
+  protect,
+  validator.updateBankDetails,
+  controller.editUserBankDetails
+);
+
 module.exports = router;

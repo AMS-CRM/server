@@ -3,6 +3,7 @@ const router = express.Router();
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const { findOne } = require("../../models/user.model");
+const { zumConnect, createZumUser } = require("../../utils/zum");
 
 // Get the models
 const User = require("../../models/user.model");
@@ -27,6 +28,86 @@ const getUserBalance = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).setCode(485).setPayload(balance).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Create the zumrails users with bank details
+// The function will not save the user bank details in the database
+const editUserBankDetails = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  console.log(errors);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(340).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    // Get the user information
+    const { _id } = req.user;
+
+    // Get the user information
+    const getUserData = await User.findOne({
+      _id,
+    });
+
+    if (!getUserData) {
+      res.status(400).setCode(3534);
+      throw new Error("Something went wrong when fetching the user");
+    }
+
+    // Check if the user already have an account on zum
+    if (getUserData.paymentsId) {
+      res.status(400).setCode(3534);
+      throw new Error("User already exists");
+    }
+
+    const { name, email, phoneNumber } = getUserData;
+    const { accountNumber, transitNumber, instituteNumber } = req.body;
+    const [firstName, lastName] = name.split(" ");
+
+    // Connect to the zumrails server
+    const response = await zumConnect();
+
+    if (response.data.isError) {
+      res.status(400).setStatus(933);
+      throw new Error("Cannot create the user");
+    }
+
+    // Get the token
+    const { Token } = response.data.result;
+
+    const zumUser = await createZumUser(
+      Token,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      _id,
+      instituteNumber,
+      transitNumber,
+      accountNumber
+    );
+
+    if (zumUser.data.isError) {
+      res.status(400).setStatus(733);
+      throw new Error("Cannot create the user");
+    }
+    // Get the user ID
+    const addZumUserId = await User.findOneAndUpdate(
+      {
+        _id,
+      },
+      { paymentsId: zumUser.data.result.Id },
+      { new: true }
+    );
+
+    if (!addZumUserId) {
+      res.status(400).setStatus(773);
+      throw new Error("Cannot add the user ID to database");
+    }
+    return res.status(200).setCode(3434).setPayload(addZumUserId).respond();
   } catch (error) {
     throw new Error(error);
   }
@@ -154,4 +235,5 @@ module.exports = {
   getUserBalance,
   updatePushNotificationStatus,
   updatePushNotificationToken,
+  editUserBankDetails,
 };
