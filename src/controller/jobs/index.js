@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 // Get the models
 const Jobs = require("../../models/jobs.model");
 const asyncHandler = require("express-async-handler");
+const { ValidationHalt } = require("express-validator/src/base");
 
 // Controller to fetch the list of jobs
 const jobsList = asyncHandler(async (req, res) => {
@@ -78,8 +79,57 @@ const singleJob = asyncHandler(async (req, res) => {
   }
 });
 
+// Module to apply for a job
+const applyOnJob = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setPayload(errors.array()).setCode(343);
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { jobId } = req.body;
+    const { _id: user } = req.user;
+
+    // Check if the user already applied for the job
+    const checkJobApplications = await Jobs.findOne({
+      _id: jobId,
+      applied: user,
+    });
+
+    if (checkJobApplications) {
+      throw new Error("User already applied for this job");
+    }
+
+    console.log(jobId);
+    // Apply for the job
+    const applyForJob = await Jobs.findOneAndUpdate(
+      {
+        _id: jobId,
+      },
+      {
+        $push: {
+          applied: user,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    // Apply for the job
+    if (!applyForJob) {
+      throw new Error("Something went wrong when applying for a job");
+    }
+
+    return res.status(200).setCode(232).setPayload(applyForJob).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   jobsList,
   singleJob,
-  jobsApply,
+  applyOnJob,
 };

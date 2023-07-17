@@ -5,7 +5,7 @@ const getSingleJob = [
 ];
 
 const jobsApplyChecks = [
-  body("id").not().isEmpty().withMessage("No jobs found with given ID"),
+  body("jobId").not().isEmpty().withMessage("No jobs found with given ID"),
 ];
 
 module.exports = {

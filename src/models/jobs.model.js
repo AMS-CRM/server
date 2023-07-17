@@ -35,7 +35,8 @@ const jobSchema = new Schema({
   ],
   applied: [
     {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
     },
   ],
   location: {

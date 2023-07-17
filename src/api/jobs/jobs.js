@@ -5,6 +5,7 @@ const {
   jobsList,
   singleJob,
   jobsApply,
+  applyOnJob,
 } = require("../../controller/jobs/index");
 const { getSingleJob, jobsApplyChecks } = require("../../validators/jobs");
 
@@ -33,6 +34,6 @@ router.get("/:id", protect, getSingleJob, singleJob);
  * @Access  Private
  *
  */
-router.post("/apply", protect, jobsApplyChecks, jobsApply);
+router.post("/apply", protect, jobsApplyChecks, applyOnJob);
 
 module.exports = router;
