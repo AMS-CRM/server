@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { stringify } = require("uuid");
 const Schema = mongoose.Schema;
 
 const jobSchema = new Schema({
@@ -59,6 +58,11 @@ const jobSchema = new Schema({
   },
   wage: {
     type: Number,
+    required: true,
+  },
+  createdOn: {
+    type: Date,
+    default: new Date(),
     required: true,
   },
 });

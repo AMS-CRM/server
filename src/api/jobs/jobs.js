@@ -6,8 +6,22 @@ const {
   singleJob,
   jobsApply,
   applyOnJob,
+  createJob,
 } = require("../../controller/jobs/index");
-const { getSingleJob, jobsApplyChecks } = require("../../validators/jobs");
+const {
+  getSingleJob,
+  jobsApplyChecks,
+  createJobValidation,
+} = require("../../validators/jobs");
+
+/***
+ *
+ * @API     POST /jobs
+ * @Desc    Employee apply for a new job
+ * @Access  Private
+ *
+ */
+router.post("/", protect, createJobValidation, createJob);
 
 /***
  *

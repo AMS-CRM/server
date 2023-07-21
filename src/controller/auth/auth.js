@@ -157,38 +157,48 @@ const phoneRegister = asyncHandler(async (req, res) => {
 });
 
 const phoneLogin = asyncHandler(async (req, res) => {
-  // Get the login code
-  const { phone, code } = req.body;
+  try {
+    // Get the login code
+    const { phone, code } = req.body;
 
-  if (!phone || !code) {
-    res.status(400);
-    throw new Error("Please provide valid OTP");
+    if (!phone || !code) {
+      res.status(400);
+      throw new Error("Please provide valid OTP");
+    }
+
+    // Check if the user exists
+    const userExists = await User.findOne({ phone });
+    const user = !userExists ? await User.create({ phone }) : userExists;
+
+    // Set the verfication code
+    let phoneNumber;
+    let verification = "approved";
+
+    if (process.env.NODE_ENV == "production") {
+      phoneNumber = await verifyPhoneNumber(phone);
+
+      verification = await verifyOneTimePassword(phoneNumber, code);
+    }
+
+    // Send the verfication code
+    if (!phoneNumber || verification !== "approved") {
+      res.status(400).setCode(432);
+      throw new Error("Invalid OTP");
+    }
+
+    return res
+      .status(200)
+      .setCode(235)
+      .setPayload({
+        _id: user.id,
+        name: user.name || null,
+        email: user.email || null,
+        token: generateToken(user._id),
+      })
+      .respond();
+  } catch (error) {
+    throw new Error(error);
   }
-
-  // Check if the user exists
-  const userExists = await User.findOne({ phone });
-  const user = !userExists ? await User.create({ phone }) : userExists;
-
-  // Generate the JWT token
-  const phoneNumber = true; //verifyPhoneNumber(phone);
-
-  const verification = "approved"; //await verifyOneTimePassword(phoneNumber, code);
-
-  if (!phoneNumber || verification !== "approved") {
-    res.status(400);
-    throw new Error("Invalid OTP");
-  }
-
-  return res
-    .status(200)
-    .setCode(235)
-    .setPayload({
-      _id: user.id,
-      name: user.name || null,
-      email: user.email || null,
-      token: generateToken(user._id),
-    })
-    .respond();
 });
 
 const sendOneTimePassword = asyncHandler(async (req, res) => {
@@ -200,7 +210,9 @@ const sendOneTimePassword = asyncHandler(async (req, res) => {
     throw new Error("Please provide a valid phone number");
   }
 
-  return res.status(200).send("success");
+  if (process.env.NODE_ENV == "development") {
+    return res.status(200).send("success");
+  }
 
   twilioApi()
     .verifications.create({ to: phoneNumber, channel: "sms" })
@@ -236,7 +248,7 @@ const twilioApi = () => {
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = require("twilio")(accountSid, authToken);
 
-  return client.verify.services("VA0d6e36df0f789c38e8af3463fa48e234");
+  return client.verify.v2.services("VA0d6e36df0f789c38e8af3463fa48e234");
 };
 
 module.exports = {
