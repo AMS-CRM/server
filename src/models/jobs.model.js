@@ -53,11 +53,11 @@ const jobSchema = new Schema({
     },
   },
   estimatedEarnings: {
-    type: Number,
+    type: String,
     required: true,
   },
   wage: {
-    type: Number,
+    type: String,
     required: true,
   },
   createdOn: {

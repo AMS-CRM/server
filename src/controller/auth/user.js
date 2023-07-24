@@ -2,8 +2,13 @@ const express = require("express");
 const router = express.Router();
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
-const { findOne } = require("../../models/user.model");
-const { zumConnect, createZumUser } = require("../../utils/zum");
+
+const { createCourierProfile } = require("../../utils/courier");
+const {
+  zumConnect,
+  createZumUser,
+  updateBankAccountInformation,
+} = require("../../utils/zum");
 
 // Get the models
 const User = require("../../models/user.model");
@@ -37,7 +42,7 @@ const getUserBalance = asyncHandler(async (req, res) => {
 // The function will not save the user bank details in the database
 const editUserBankDetails = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
-  console.log(errors);
+
   if (!errors.isEmpty()) {
     res.status(400).setCode(340).setPayload(errors.array());
     throw new Error("Validation error");
@@ -46,6 +51,12 @@ const editUserBankDetails = asyncHandler(async (req, res) => {
   try {
     // Get the user information
     const { _id } = req.user;
+    const { accountNumber, transitNumber, instituteNumber } = req.body;
+
+    // Connect to the zumrails server
+    const response = await zumConnect();
+    // Get the token
+    const { Token } = response.data.result;
 
     // Get the user information
     const getUserData = await User.findOne({
@@ -59,24 +70,28 @@ const editUserBankDetails = asyncHandler(async (req, res) => {
 
     // Check if the user already have an account on zum
     if (getUserData.paymentsId) {
-      res.status(400).setCode(3534);
-      throw new Error("User already exists");
+      const updateBankAccount = await updateBankAccountInformation(
+        Token,
+        getUserData.paymentsId,
+        instituteNumber,
+        transitNumber,
+        accountNumber
+      );
+      if (updateBankAccount.data.isError) {
+        res.status(400).setStatus(933);
+        throw new Error("Cannot update the bank information");
+      }
+
+      return res.status(200).setPayload(getUserData).setCode(833).respond();
     }
 
     const { name, email, phoneNumber } = getUserData;
-    const { accountNumber, transitNumber, instituteNumber } = req.body;
     const [firstName, lastName] = name.split(" ");
-
-    // Connect to the zumrails server
-    const response = await zumConnect();
 
     if (response.data.isError) {
       res.status(400).setStatus(933);
       throw new Error("Cannot create the user");
     }
-
-    // Get the token
-    const { Token } = response.data.result;
 
     const zumUser = await createZumUser(
       Token,
@@ -177,18 +192,26 @@ const updatePushNotificationToken = asyncHandler(async (req, res) => {
     }
     const userId = req.user._id;
     const { pushNotificationToken } = req.body;
-    console.log(pushNotificationToken);
+
     const updateNotificationToken = await User.findOneAndUpdate(
       {
         _id: userId,
       },
       { pushNotificationToken: pushNotificationToken },
-      { new: true, projection: { pushNotificationToken: 1 } }
+      { new: true }
     );
 
     if (!updateNotificationToken) {
       throw new Error("Cannot update the push token");
     }
+    // Update the courier profile
+    const updateCourierProfile = await createCourierProfile(
+      userId,
+      updateNotificationToken.name,
+      updateNotificationToken.email,
+      updateNotificationToken.phoneNumber,
+      pushNotificationToken
+    );
 
     return res.setCode(695).setPayload(updateNotificationToken).respond();
   } catch (error) {
@@ -217,6 +240,19 @@ const editUser = asyncHandler(async (req, res) => {
     const editUser = await User.findOneAndUpdate(user._id, update, {
       new: true,
     });
+
+    if (!editUser) {
+      throw new Error("Something went wrong when editing the user");
+    }
+
+    // Update the courier profile
+    const updateCourierProfile = await createCourierProfile(
+      user._id,
+      editUser.name,
+      editUser.email,
+      editUser.phoneNumber
+    );
+
     return res
       .status(200)
       .setPayload({ ...editUser._doc, token: req.token })

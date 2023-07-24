@@ -193,6 +193,8 @@ const phoneLogin = asyncHandler(async (req, res) => {
         _id: user.id,
         name: user.name || null,
         email: user.email || null,
+        accountVerified: user.paymentsId ? true : false,
+        type: user.type || null,
         token: generateToken(user._id),
       })
       .respond();

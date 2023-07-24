@@ -1,6 +1,34 @@
 const axios = require("axios");
 
-// Function to create zumrails user to initate later transfers
+// Function to update the user bank account information
+async function updateBankAccountInformation(
+  token,
+  user,
+  InstitutionNumber,
+  TransitNumber,
+  AccountNumber
+) {
+  const URL = `${process.env.ZUM_ENDPOINT}/user/UpdateBankAccountInformation/${user}`;
+
+  try {
+    const data = {
+      InstitutionNumber,
+      TransitNumber,
+      AccountNumber,
+    };
+    // Send the axios request to create new user
+    return await axios.patch(URL, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
+  }
+}
+
+// Update user bank account information
 async function createZumUser(
   token,
   FirstName,
@@ -29,7 +57,6 @@ async function createZumUser(
       },
     };
 
-    console.log(data);
     // Send the axios request to create new user
     return await axios.post(URL, data, {
       headers: {
@@ -99,5 +126,6 @@ data.forEach((transferData) => {
 module.exports = {
   zumConnect,
   transfer,
+  updateBankAccountInformation,
   createZumUser,
 };

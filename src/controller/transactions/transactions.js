@@ -5,7 +5,7 @@ const { UserRolesContext } = require("twilio/lib/rest/flexApi/v1/userRoles");
 const Transaction = require("../../models/transaction.model");
 const User = require("../../models/user.model");
 const credit = require("../../utils/accountBalance.js");
-const pushNotification = require("../../utils/pushNotification");
+const { pushNotification } = require("../../utils/courier");
 
 // Get a single transaction
 const getTransaction = asyncHandler(async (req, res) => {

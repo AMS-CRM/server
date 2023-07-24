@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const { addressToGeoCode } = require("../../utils/geoCode");
+const { pushNotificationList } = require("../../utils/courier");
 
 // Get the models
 const Jobs = require("../../models/jobs.model");
@@ -14,12 +15,23 @@ const createJob = asyncHandler(async (req, res) => {
   }
 
   try {
-    const { title, wage, location, estimatedEarnings, timing, desc } = req.body;
+    const {
+      title,
+      wage,
+      location,
+      estimatedEarnings,
+      timing,
+      desc,
+      notifyTitle,
+      notifyBody,
+    } = req.body;
+
+    console.log(estimatedEarnings);
 
     // Convert location address to lag and long
     const { latitude, longitude } = (await addressToGeoCode(location))[0];
     // Create a new jobs post
-    const createJobsPost = Jobs.create({
+    const createJobsPost = await Jobs.create({
       title,
       wage,
       location: {
@@ -35,6 +47,18 @@ const createJob = asyncHandler(async (req, res) => {
     if (!createJobsPost) {
       res.status(400).setCode(744).setPayload(createJobsPost);
       throw new Error("Something went wrong");
+    }
+
+    // Send the push notification if requested
+    if (notifyTitle && notifyBody) {
+      const url = `${process.env.APP_SCHEME_URL}job?jobId=${createJobsPost._id}`;
+      console.log(url);
+      await pushNotificationList(
+        process.env.DEFAULT_PUSH_NOTIFICATION_LIST,
+        notifyTitle,
+        notifyBody,
+        { url }
+      );
     }
 
     return res.status(200).setCode(433).setPayload(createJobsPost).respond();
