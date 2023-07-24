@@ -13,6 +13,16 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  type: {
+    type: String,
+    required: true,
+    defaulter: "tenet",
+  },
+  accountVerified: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   email: {
     type: String,
     required: false,
