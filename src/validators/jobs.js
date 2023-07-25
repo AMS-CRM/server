@@ -8,6 +8,10 @@ const jobsApplyChecks = [
   body("jobId").not().isEmpty().withMessage("No jobs found with given ID"),
 ];
 
+const getJobsByPage = [
+  param("page").not().isEmpty().withMessage("Page number is required"),
+];
+
 const createJobValidation = [
   body("title").not().isEmpty().withMessage("Title is required"),
   body("wage").not().isEmpty().withMessage("Wage is required"),

@@ -24,9 +24,9 @@ const createJob = asyncHandler(async (req, res) => {
       desc,
       notifyTitle,
       notifyBody,
+      phone,
+      email,
     } = req.body;
-
-    console.log(estimatedEarnings);
 
     // Convert location address to lag and long
     const { latitude, longitude } = (await addressToGeoCode(location))[0];
@@ -42,6 +42,8 @@ const createJob = asyncHandler(async (req, res) => {
       desc,
       estimatedEarnings,
       timing,
+      phone,
+      email,
     });
 
     if (!createJobsPost) {
@@ -69,9 +71,19 @@ const createJob = asyncHandler(async (req, res) => {
 
 // Controller to fetch the list of jobs
 const jobsList = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setStatus(400).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
   try {
+    const PAGE_LIMIT = 5;
+    const PAGE = req.params.page || 0;
+    const SKIP_JOBS = PAGE * PAGE_LIMIT;
+
     // Get the list of all the jobs
-    const jobsList = await Jobs.find({});
+    const jobsList = await Jobs.find({}).skip(SKIP_JOBS).limit(PAGE_LIMIT);
 
     if (!jobsList) {
       throw new Error("No jobs found!");

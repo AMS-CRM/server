@@ -60,6 +60,14 @@ const jobSchema = new Schema({
     type: String,
     required: true,
   },
+  phone: {
+    type: String,
+    required: false,
+  },
+  email: {
+    type: String,
+    reqquired: false,
+  },
   createdOn: {
     type: Date,
     default: new Date(),

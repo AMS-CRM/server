@@ -25,12 +25,12 @@ router.post("/", protect, createJobValidation, createJob);
 
 /***
  *
- * @API     GET /jobs
+ * @API     get /jobs
  * @Desc    Get the list of all jobs
  * @Access  Private
  *
  */
-router.get("/", protect, jobsList);
+router.get("/list/:page", protect, jobsList);
 
 /***
  *
