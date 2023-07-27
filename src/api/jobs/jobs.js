@@ -7,6 +7,7 @@ const {
   jobsApply,
   applyOnJob,
   createJob,
+  countJobs,
 } = require("../../controller/jobs/index");
 const {
   getSingleJob,
@@ -31,6 +32,15 @@ router.post("/", protect, createJobValidation, createJob);
  *
  */
 router.get("/list/:page", protect, jobsList);
+
+/***
+ *
+ * @API     get /jobs
+ * @Desc    Get the list of all jobs
+ * @Access  Private
+ *
+ */
+router.get("/count", protect, countJobs);
 
 /***
  *

@@ -197,8 +197,7 @@ const updatePushNotificationToken = asyncHandler(async (req, res) => {
       {
         _id: userId,
       },
-      { pushNotificationToken: pushNotificationToken },
-      { new: true }
+      { pushNotificationToken: pushNotificationToken }
     );
 
     if (!updateNotificationToken) {
@@ -250,7 +249,8 @@ const editUser = asyncHandler(async (req, res) => {
       user._id,
       editUser.name,
       editUser.email,
-      editUser.phoneNumber
+      editUser.phoneNumber,
+      editUser.pushNotificationToken
     );
 
     return res

@@ -6,6 +6,25 @@ const { pushNotificationList } = require("../../utils/courier");
 const Jobs = require("../../models/jobs.model");
 const asyncHandler = require("express-async-handler");
 
+// Function to count the total number of jobs
+const countJobs = asyncHandler(async (req, res) => {
+  try {
+    const countJobs = await Jobs.count({});
+
+    if (!countJobs) {
+      res.status(400).setCode(343);
+      throw new Error("Something went wront when counting the jobs");
+    }
+
+    // Get the total number of pages
+    const pages = Math.ceil(countJobs / process.env.PAGE_LIMIT);
+
+    return res.status(200).setCode(200).setPayload({ pages }).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // Function to create a new job post
 const createJob = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -78,7 +97,7 @@ const jobsList = asyncHandler(async (req, res) => {
   }
 
   try {
-    const PAGE_LIMIT = 5;
+    const PAGE_LIMIT = process.env.PAGE_LIMIT || 5;
     const PAGE = req.params.page || 0;
     const SKIP_JOBS = PAGE * PAGE_LIMIT;
 
@@ -219,4 +238,5 @@ module.exports = {
   createJob,
   singleJob,
   applyOnJob,
+  countJobs,
 };

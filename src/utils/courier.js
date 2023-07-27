@@ -29,7 +29,10 @@ const createCourierProfile = async (
     }
 
     // Subscribe the user to thel ist
-    const subscribe = await courierClient.lists.subscribe("crew", userId);
+    const subscribe = await courierClient.lists.subscribe(
+      process.env.DEFAULT_PUSH_NOTIFICATION_LIST,
+      userId
+    );
 
     return true;
   } catch (error) {
