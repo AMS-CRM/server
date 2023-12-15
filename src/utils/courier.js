@@ -123,7 +123,15 @@ createCourierProfile(
   });
   console.log(profile);
 })();
-*/
+
+(async () => {
+  // Unsubcribe user from the list
+  const unsubscribe = await courierClient.lists.unsubscribe(
+    "crew1",
+    "64c45cf33b170a84dc13aabf"
+  );
+  console.log(unsubscribe);
+})();*/
 
 module.exports = {
   pushNotification,
