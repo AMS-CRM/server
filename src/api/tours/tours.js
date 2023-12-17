@@ -13,4 +13,22 @@ const { protect } = require("../../middleware/authMiddleware");
  */
 router.post("/", protect, validator.createTour, controller.createTour);
 
+/**
+ *
+ * @API     GET /tours/
+ * @Desc    Get a single tour data
+ * @access  Private
+ *
+ */
+router.get("/list", protect, controller.listTours);
+
+/**
+ *
+ * @API     GET /tours/
+ * @Desc    Get a single tour data
+ * @access  Private
+ *
+ */
+router.get("/:id", protect, validator.getTour, controller.getTour);
+
 module.exports = router;

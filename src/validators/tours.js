@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 const createTour = [
   body("name").not().isEmpty().withMessage("Name cannot be empty"),
@@ -15,6 +15,9 @@ const createTour = [
     .withMessage("bookingState cannot be empty"),
 ];
 
+const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
+
 module.exports = {
   createTour,
+  getTour,
 };
