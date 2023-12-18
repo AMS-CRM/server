@@ -16,38 +16,20 @@ const ToursSchema = new Schema({
   },
   bookingState: {
     type: String,
-    enum: ["Full", "Booking", "Closed"],
+    enum: ["Full", "Booking", "Closed", "Waitlist", "TBA"],
   },
-  batches: [
-    {
-      name: {
-        type: String,
-        required: false,
-      },
-      startDate: {
-        type: Date,
-        required: true,
-      },
-      endDate: {
-        type: Date,
-        required: true,
-      },
-      status: {
-        type: Boolean,
-        required: true,
-      },
-    },
-  ],
-  image: [
-    {
-      name: {
-        type: String,
-      },
-      path: {
-        type: String,
-      },
-    },
-  ],
+  startDate: {
+    type: Date,
+    required: false,
+  },
+  endDate: {
+    type: Date,
+    required: true,
+  },
+  featureImage: {
+    type: String,
+    required: false,
+  },
   createdOn: {
     type: Date,
     default: Date.now(),
