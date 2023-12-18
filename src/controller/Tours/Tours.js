@@ -16,8 +16,15 @@ const createTour = asyncHandler(async (req, res) => {
   }
 
   try {
-    const { name, description, startDate, endDate, price, bookingState } =
-      req.body;
+    const {
+      name,
+      description,
+      startDate,
+      endDate,
+      price,
+      bookingState,
+      featureImage,
+    } = req.body;
     const tourData = {
       name,
       description,
