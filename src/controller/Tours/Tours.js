@@ -25,6 +25,7 @@ const createTour = asyncHandler(async (req, res) => {
       endDate,
       price,
       bookingState,
+      featureImage,
     };
 
     const createTour = await Tour.create(tourData);

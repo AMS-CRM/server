@@ -13,7 +13,11 @@ const createTour = [
     .not()
     .isEmpty()
     .withMessage("bookingState cannot be empty"),
-  body("image").optional().not().isEmpty().withMessage("Image cannot be empty"),
+  body("featureImage")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Image cannot be empty"),
 ];
 
 const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
