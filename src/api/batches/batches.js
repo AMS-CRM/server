@@ -5,6 +5,9 @@ const router = express.Router();
 const controller = require("../../controller/Tours/Batch.js");
 const validator = require("../../validators/tours.js");
 
+// Get the auth middleware
+const { protect } = require("../../middleware/authMiddleware.js");
+
 /**
  *
  * @API     Post /batch
@@ -12,6 +15,24 @@ const validator = require("../../validators/tours.js");
  * @Access  Private
  *
  */
-router.get("/", { protect }, validator.createBatch, controller.createBatch);
+router.get("/", protect, validator.createBatch, controller.createBatch);
 
-export default router;
+/**
+ *
+ * @API     Get /batch/list
+ * @Desc    Get the list of the batches
+ * @Access  Private
+ *
+ */
+router.get("/list/:tour", protect, validator.listBatch, controller.listBatch);
+
+/**
+ *
+ * @API     Get /batch/:batch
+ * @Desc    Get the details of one batch
+ * @Access  Private
+ *
+ */
+router.get("/:tour/:batch", protect, validator.findBatch, controller.findBatch);
+
+module.exports = router;

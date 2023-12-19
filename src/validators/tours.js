@@ -27,9 +27,8 @@ const bookTour = [
   body("numberOfMembers")
     .not()
     .isEmpty()
-    .withMessgae("Please number of the number of members"),
+    .withMessage("Please provide number of members"),
   body("tour").not().isEmpty().withMessage("Tour is not valid"),
-  ...createContact,
 ];
 
 // Create a new batch
@@ -38,7 +37,16 @@ const createBatch = [
   body("name").not().isEmpty().withMessage("Batch name is required"),
   body("startDate").not().isEmpty().withMessage("Start date is required"),
   body("endDate").not().isEmpty().withMessage("End Date is required"),
-  body("status").not().isBoolean().withMessage("Please provide a valid status"),
+  body("status").isBoolean().withMessage("Please provide a valid status"),
+];
+
+const findBatch = [
+  param("batch").not().isEmpty().withMessage("Invalid batch ID"),
+  param("tour").not().isEmpty().withMessage("Invalid tour ID"),
+];
+
+const listBatch = [
+  param("tour").not().isEmpty().withMessage("Invalid tour ID"),
 ];
 
 const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
@@ -46,4 +54,7 @@ const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
 module.exports = {
   createTour,
   getTour,
+  createBatch,
+  findBatch,
+  listBatch,
 };
