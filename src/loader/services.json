@@ -3,5 +3,6 @@
   "user": "/user/users.js",
   "contacts": "/contacts/contacts.js",
   "countries": "/countries/countries.js",
-  "tours": "/tours/tours.js"
+  "tours": "/tours/tours.js",
+  "batch": "/batches/batches.js"
 }
