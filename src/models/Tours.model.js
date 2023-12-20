@@ -40,42 +40,68 @@ const ToursSchema = new Schema({
         type: Date,
         required: true,
       },
-    },
-  ],
-  bookings: [
-    {
-      user: {
-        type: String,
-        ref: "user",
-        required: false,
+      createOn: {
+        type: Date,
+        default: Date.now(),
       },
-      bookingRef: {
-        type: String,
-        required: false,
-      },
-      numberOfMembers: {
-        type: Number,
-        required: false,
-      },
-      members: [
+      bookings: [
         {
-          type: String,
-          ref: "contacts",
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+            required: true,
+          },
+
+          bookingRef: {
+            type: String,
+            required: false,
+          },
+          numberOfMembers: {
+            type: Number,
+            required: true,
+          },
+          members: [
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "contacts",
+            },
+          ],
+          bookedOn: {
+            type: Date,
+            default: Date.now,
+          },
+          status: {
+            type: String,
+            enum: [
+              "In Progress",
+              "Cancelled",
+              "Booked",
+              "Confirmed",
+              "Refunded",
+            ],
+            default: "In Progress",
+          },
+          payments: {
+            amount: {
+              type: Number,
+              required: true,
+            },
+            status: {
+              type: String,
+              required: true,
+              enum: ["Paid", "Pending", "Partial Payment"],
+            },
+            amountPaid: {
+              type: Number,
+              required: false,
+            },
+            reference: {
+              type: String,
+              required: false,
+            },
+          },
         },
       ],
-      bookedOn: {
-        type: Date,
-        default: Date.now,
-      },
-      status: {
-        type: String,
-        enum: ["In Progress", "Cancelled", "Booked", "Confirmed", "Refunded"],
-        default: "In Progress",
-      },
-      payments: {
-        type: String,
-        required: false,
-      },
     },
   ],
   createdOn: {

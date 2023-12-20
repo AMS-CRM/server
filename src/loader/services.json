@@ -4,5 +4,7 @@
   "contacts": "/contacts/contacts.js",
   "countries": "/countries/countries.js",
   "tours": "/tours/tours.js",
-  "batch": "/batches/batches.js"
+  "batch": "/batches/batches.js",
+  "bookings": "/bookings/bookings.js"
+
 }

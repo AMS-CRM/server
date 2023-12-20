@@ -23,12 +23,14 @@ const createTour = [
 ];
 
 // Book a tour
-const bookTour = [
+const newBooking = [
+  body("tour").not().isEmpty().withMessage("The provided tour is invalid"),
+  body("batch").not().isEmpty().withMessage("The provided tour is invalid"),
   body("numberOfMembers")
     .not()
     .isEmpty()
     .withMessage("Please provide number of members"),
-  body("tour").not().isEmpty().withMessage("Tour is not valid"),
+  ...createContact,
 ];
 
 // Create a new batch
@@ -57,4 +59,5 @@ module.exports = {
   createBatch,
   findBatch,
   listBatch,
+  newBooking,
 };

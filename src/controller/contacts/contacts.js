@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 // Get the models
 const contacts = require("../../models/contacts.model.js");
 const { find } = require("../../models/contacts.model.js");
+const createNewContact = require("../../utils/createContact.js");
 
 const createContact = asyncHandler(async (req, res) => {
   // Check the validation errors
@@ -14,52 +15,12 @@ const createContact = asyncHandler(async (req, res) => {
     throw new Error("Validation error");
   }
 
-  const {
-    firstName,
-    middleName,
-    lastName,
-    email,
-    dob,
-    passport,
-    dial_code,
-    phone,
-    nationality,
-    address,
-    state,
-    city,
-    postalCode,
-  } = req.body;
-  const user = req.user._id;
-
-  const data = {
-    firstName,
-    middleName,
-    lastName,
-    email,
-    nationality,
-    dob,
-    passport,
-    phone: {
-      number: phone,
-      country: dial_code,
-    },
-    address: {
-      address,
-      city,
-      state,
-      postalCode,
-    },
-    user,
-  };
-
   try {
-    const contact = await contacts.create(data);
-
-    if (!contact) {
-      throw new Error("Error while creating a new contact");
+    const create = await createNewContact(req.user._id, req.body);
+    if (!create) {
+      throw new Error(create);
     }
-
-    res.status(200).setCode(234).setPayload(contact).respond();
+    res.status(200).setCode(234).setPayload(create).respond();
   } catch (err) {
     res.status(400).setCode(235);
     throw new Error(err);
