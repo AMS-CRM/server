@@ -4,6 +4,7 @@ const createContact = require("../../utils/createContact.js");
 
 // Get the models
 const ToursModel = require("../../models/Tours.model.js");
+const { default: mongoose } = require("mongoose");
 
 // Controller to create a new bookings
 const newBooking = asyncHandler(async (req, res) => {
@@ -108,6 +109,38 @@ const newBooking = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to get the list of the bookings
+const singleBooking = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(343).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { bookingId, tour } = req.params;
+
+    // Get the single booking
+    const singleBookingData = await ToursModel.aggregate([]);
+    if (!singleBookingData) {
+      res.status(200).setCode(342);
+      throw new Error("Something went wrong fetching the booking");
+    }
+
+    return res.status(200).setPayload(singleBookingData).setCode(204).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Controller to get a single booking
+const getBookingList = asyncHandler(async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
 module.exports = {
   newBooking,
+  singleBooking,
+  getBookingList,
 };

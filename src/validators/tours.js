@@ -42,6 +42,10 @@ const createBatch = [
   body("status").isBoolean().withMessage("Please provide a valid status"),
 ];
 
+const singleBooking = [
+  param("bookingId").not().isEmpty().withMessage("Invalid booking Id"),
+];
+
 const findBatch = [
   param("batch").not().isEmpty().withMessage("Invalid batch ID"),
   param("tour").not().isEmpty().withMessage("Invalid tour ID"),
@@ -60,4 +64,5 @@ module.exports = {
   findBatch,
   listBatch,
   newBooking,
+  singleBooking,
 };
