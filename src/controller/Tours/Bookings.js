@@ -156,7 +156,9 @@ const singleBooking = asyncHandler(async (req, res) => {
     // Get the single booking
     const singleBookingData = await BookingsModel.findOne({
       _id: bookingId,
-    });
+    })
+      .populate("tour")
+      .populate("user");
 
     if (!singleBookingData) {
       res.status(200).setCode(342);
@@ -173,7 +175,9 @@ const singleBooking = asyncHandler(async (req, res) => {
 const getBookingList = asyncHandler(async (req, res) => {
   try {
     // Get the single booking
-    const getBookingsData = await BookingsModel.findOne({});
+    const getBookingsData = await BookingsModel.findOne({})
+      .populate("tour")
+      .populate("user");
 
     if (!getBookingsData) {
       res.status(200).setCode(542);
@@ -193,7 +197,9 @@ const getUsersBookingsData = asyncHandler(async (req, res) => {
     const { user } = req.params;
 
     // Get the single booking
-    const userBookings = await BookingsModel.findOne({ user }).populate("tour");
+    const userBookings = await BookingsModel.findOne({ user })
+      .populate("tour")
+      .populate("user");
 
     if (!userBookings) {
       res.status(200).setCode(542);
