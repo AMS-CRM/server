@@ -158,7 +158,8 @@ const singleBooking = asyncHandler(async (req, res) => {
       _id: bookingId,
     })
       .populate("tour")
-      .populate("user");
+      .populate("user")
+      .populate("members");
 
     if (!singleBookingData) {
       res.status(200).setCode(342);
@@ -177,7 +178,8 @@ const getBookingList = asyncHandler(async (req, res) => {
     // Get the single booking
     const getBookingsData = await BookingsModel.findOne({})
       .populate("tour")
-      .populate("user");
+      .populate("user")
+      .populate("members");
 
     if (!getBookingsData) {
       res.status(200).setCode(542);
@@ -199,7 +201,8 @@ const getUsersBookingsData = asyncHandler(async (req, res) => {
     // Get the single booking
     const userBookings = await BookingsModel.findOne({ user })
       .populate("tour")
-      .populate("user");
+      .populate("user")
+      .populate("members");
 
     if (!userBookings) {
       res.status(200).setCode(542);
