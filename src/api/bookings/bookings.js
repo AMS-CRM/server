@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const validator = require("../../validators/tours.js");
-const controller = require("../../controller/Tours/bookings.js");
+const controller = require("../../controller/Tours/Bookings.js");
 const { protect } = require("../../middleware/authMiddleware");
 
 /**
