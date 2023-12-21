@@ -22,30 +22,7 @@ const ToursSchema = new Schema({
     type: String,
     required: false,
   },
-  batch: [
-    {
-      name: {
-        type: String,
-        required: true,
-      },
-      status: {
-        type: Boolean,
-        required: false,
-      },
-      startDate: {
-        type: Date,
-        required: false,
-      },
-      endDate: {
-        type: Date,
-        required: true,
-      },
-      createOn: {
-        type: Date,
-        default: Date.now(),
-      },
-    },
-  ],
+
   createdOn: {
     type: Date,
     default: Date.now(),

@@ -4,8 +4,8 @@ const createContact = require("../../utils/createContact.js");
 
 // Get the models
 const ToursModel = require("../../models/Tours.model.js");
-const { default: mongoose } = require("mongoose");
-
+const BookingsModel = require("../../models/bookings.model.js");
+const mongoose = require("mongoose");
 // Controller to create a new bookings
 const newBooking = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -18,37 +18,54 @@ const newBooking = asyncHandler(async (req, res) => {
     const { tour, batch, numberOfMembers, ...contact } = req.body;
     const user = req.user._id;
 
-    // Check if user already started the booking
+    /* Check if user already started the booking
     const getTourBatch = await ToursModel.findOne(
       {
         _id: tour,
         "batch._id": batch,
       },
       { _id: 0, batch: 1, price: 1 }
-    );
+    );*/
 
-    if (!getTourBatch) {
-      res.status(400).setCode(324);
-      throw new Error("No tour found");
-    }
+    const getUserBookingWithBatch = await BookingsModel.findOne({
+      tour: tour,
+      batch: batch,
+      user: user,
+    });
 
-    const checkBookingsFromUser = getTourBatch.batch[0].bookings?.filter(
-      (booking) => booking.user.toString() == user
-    );
+    /* return res
+      .status(200)
+      .setCode(200)
+      .setPayload(getUserBookingWithBatch)
+      .respond();*/
 
     // Create a new contact
     const contactCreate = await createContact(req.user._id, contact);
     if (!contactCreate) {
       throw new Error(contactCreate);
     }
+    const getTourBatch = await ToursModel.findOne(
+      {
+        _id: tour,
+      },
+      { _id: 0, price: 1 }
+    );
 
-    // Create new bookings
-    if (checkBookingsFromUser.length == 0) {
+    if (!getTourBatch) {
+      res.status(200).setCode(233);
+      throw new Error("Something went wrong fetching a batch");
+    }
+
+    if (!getUserBookingWithBatch) {
+      // Create new bookings
       // Calculate the booking amount
       const amount = getTourBatch.price * numberOfMembers;
+
       // Create a new booking
       const newBookingData = {
         user,
+        batch,
+        tour,
         numberOfMembers,
         members: [contactCreate._id],
         status: "In Progress",
@@ -60,18 +77,32 @@ const newBooking = asyncHandler(async (req, res) => {
       };
 
       // Create a new booking
-      const createNewBookings = await ToursModel.findOneAndUpdate(
-        {
-          _id: tour,
-          "batch._id": batch,
-        },
-        { $push: { "batch.$.bookings": newBookingData } },
-        { new: true }
-      );
+      const createNewBookings = await BookingsModel.create(newBookingData);
 
       if (!createNewBookings) {
         res.status(400).setCode(130);
         throw new Error("Something went wrong when createing a booking");
+      }
+
+      // Update the batch to add the new bookings
+      const batchUpdateInTours = await ToursModel.findOneAndUpdate(
+        {
+          _id: tour,
+          "batch._id": batch,
+        },
+        {
+          $push: {
+            "batch.$.bookings": createNewBookings._id,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      if (!batchUpdateInTours) {
+        res.status(400).setCode(343);
+        throw new Error("Something went wrong adding new booking to a batch");
       }
 
       return res
@@ -80,15 +111,17 @@ const newBooking = asyncHandler(async (req, res) => {
         .setPayload(createNewBookings)
         .respond();
     }
+
     //Update the current booking
-    const updateUserBookings = await ToursModel.findOneAndUpdate(
+    const updateUserBookings = await BookingsModel.findOneAndUpdate(
       {
-        _id: tour,
-        "batch.bookings.user": user,
+        tour: tour,
+        batch: batch,
+        user: user,
       },
       {
         $push: {
-          "batch.$[].bookings.$[].members": contactCreate._id,
+          members: contactCreate._id,
         },
       },
       { new: true }
@@ -118,10 +151,13 @@ const singleBooking = asyncHandler(async (req, res) => {
   }
 
   try {
-    const { bookingId, tour } = req.params;
+    const { bookingId, user } = req.params;
 
     // Get the single booking
-    const singleBookingData = await ToursModel.aggregate([]);
+    const singleBookingData = await BookingsModel.findOne({
+      _id: bookingId,
+    });
+
     if (!singleBookingData) {
       res.status(200).setCode(342);
       throw new Error("Something went wrong fetching the booking");
@@ -136,11 +172,43 @@ const singleBooking = asyncHandler(async (req, res) => {
 // Controller to get a single booking
 const getBookingList = asyncHandler(async (req, res) => {
   try {
-  } catch (error) {}
+    // Get the single booking
+    const getBookingsData = await BookingsModel.findOne({});
+
+    if (!getBookingsData) {
+      res.status(200).setCode(542);
+      throw new Error("Something went wrong fetching the booking");
+    }
+
+    return res.status(200).setPayload(getBookingsData).setCode(204).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Get all the bookings of a particular user
+const getUsersBookingsData = asyncHandler(async (req, res) => {
+  try {
+    // User for which we want to fetch bookings
+    const { user } = req.params;
+
+    // Get the single booking
+    const userBookings = await BookingsModel.findOne({ user }).populate("tour");
+
+    if (!userBookings) {
+      res.status(200).setCode(542);
+      throw new Error("Something went wrong fetching the booking");
+    }
+
+    return res.status(200).setPayload(userBookings).setCode(204).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
 });
 
 module.exports = {
   newBooking,
   singleBooking,
   getBookingList,
+  getUsersBookingsData,
 };

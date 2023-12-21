@@ -15,13 +15,31 @@ router.post("/", protect, validator.newBooking, controller.newBooking);
 
 /**
  *
+ * @API         GET /bookings/
+ * @Desc        Get the list of bookings
+ * @Access      Private
+ *
+ */
+router.get("/", protect, controller.getBookingList);
+
+/**
+ *
+ * @API         GET /bookings/user
+ * @Desc        List all the bookings of a particular user
+ * @Access      Private
+ *
+ */
+router.get("/user/:user", protect, controller.getUsersBookingsData);
+
+/**
+ *
  * @API         GET /bookings/post
  * @Desc        Create a new booking or add contact to booking
  * @Access      Private
  *
  */
 router.get(
-  "/:tour/:bookingId",
+  "/:bookingId",
   protect,
   validator.singleBooking,
   controller.singleBooking
