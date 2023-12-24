@@ -24,6 +24,20 @@ router.get("/", protect, controller.getBookingList);
 
 /**
  *
+ * @API     GET /bookings/batch/:batchid
+ * @Desc    Get a lsit of bookings in a particular batch
+ * @Access  Private
+ *
+ */
+router.get(
+  "/batch/:batchId",
+  protect,
+  validator.getBookingsListInBatch,
+  controller.getBookingsListInBatch
+);
+
+/**
+ *
  * @API         GET /bookings/user
  * @Desc        List all the bookings of a particular user
  * @Access      Private

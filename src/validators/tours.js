@@ -55,6 +55,10 @@ const listBatch = [
   param("tour").not().isEmpty().withMessage("Invalid tour ID"),
 ];
 
+const getBookingsListInBatch = [
+  param("batchId").not().isEmpty().withMessage("Invalid tour ID"),
+];
+
 const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
 
 module.exports = {
@@ -65,4 +69,5 @@ module.exports = {
   listBatch,
   newBooking,
   singleBooking,
+  getBookingsListInBatch,
 };

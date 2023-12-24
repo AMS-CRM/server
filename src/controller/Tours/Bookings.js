@@ -215,9 +215,37 @@ const getUsersBookingsData = asyncHandler(async (req, res) => {
   }
 });
 
+// Get the list of the bookings within the parctiaurl batch
+const getBookingsListInBatch = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(4354).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { batchId } = req.params;
+
+    // Get the list of bookings
+    const bookingsList = await BookingsModel.find({
+      batch: mongoose.Types.ObjectId(batchId),
+    }).populate("members");
+
+    if (!bookingsList) {
+      res.status(400).setCode(3245);
+      throw new Error("Cannot find the bookings");
+    }
+
+    return res.status(200).setCode(234).setPayload(bookingsList).respond();
+  } catch (error) {
+    throw new Error("Validation error");
+  }
+});
+
 module.exports = {
   newBooking,
   singleBooking,
   getBookingList,
   getUsersBookingsData,
+  getBookingsListInBatch,
 };
