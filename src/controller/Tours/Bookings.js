@@ -229,7 +229,9 @@ const getBookingsListInBatch = asyncHandler(async (req, res) => {
     // Get the list of bookings
     const bookingsList = await BookingsModel.find({
       batch: mongoose.Types.ObjectId(batchId),
-    }).populate("members");
+    })
+      .populate("members")
+      .populate("user");
 
     if (!bookingsList) {
       res.status(400).setCode(3245);
