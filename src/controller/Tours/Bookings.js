@@ -176,7 +176,7 @@ const singleBooking = asyncHandler(async (req, res) => {
 const getBookingList = asyncHandler(async (req, res) => {
   try {
     // Get the single booking
-    const getBookingsData = await BookingsModel.findOne({})
+    const getBookingsData = await BookingsModel.find({})
       .populate("tour")
       .populate("user")
       .populate("members");
