@@ -26,17 +26,22 @@ const createBatch = asyncHandler(async (req, res) => {
     const tourData = {
       name,
       status,
+      startDate,
+      endDate,
     };
-
     // Close other batches if the status is changed
     if (status) {
-      const closeStatus = await ToursModel.updateOne(
+      const closeStatus = await ToursModel.findOneAndUpdate(
         {
           _id: tour,
-
           "batch.status": true,
         },
-        { $set: { "batch.$.status": false } }
+        {
+          $set: {
+            "batch.$.status": false,
+          },
+        },
+        { new: true }
       );
     }
 
