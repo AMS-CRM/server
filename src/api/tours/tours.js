@@ -31,4 +31,13 @@ router.get("/list", protect, controller.listTours);
  */
 router.get("/:id", protect, validator.getTour, controller.getTour);
 
+/**
+ *
+ * @API         PUT /tours
+ * @Desc        Edit the exisitng tour
+ * @Access      Private
+ *
+ */
+router.put("/", protect, validator.editTour, controller.editTour);
+
 module.exports = router;

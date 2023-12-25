@@ -1,8 +1,43 @@
 const asyncHandler = require("express-async-handler");
-const { validationResult } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
 
 // Get the models
 const Tour = require("../../models/Tours.model");
+
+// Controller to edit tour
+const editTour = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(934).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  const { tourId, ...updateData } = matchedData(req);
+
+  try {
+    // Update the current tour
+    const updateCurrentTour = await Tour.findOneAndUpdate(
+      {
+        _id: tourId,
+      },
+      {
+        ...updateData,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updateCurrentTour) {
+      res.status(200).setCode(5334);
+      throw new Error("Something went wrong updating the tour");
+    }
+
+    return res.status(200).setCode(234).setPayload(updateCurrentTour).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 /**
  * @Desc    Create a new tour
@@ -112,4 +147,5 @@ module.exports = {
   createTour,
   listTours,
   getTour,
+  editTour,
 };

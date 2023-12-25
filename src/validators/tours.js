@@ -22,6 +22,38 @@ const createTour = [
     .withMessage("Image cannot be empty"),
 ];
 
+// Edit the current tour
+const editTour = [
+  body("tourId").not().isEmpty().withMessage("Invalid Tour ID"),
+  body("name").optional().not().isEmpty().withMessage("Name cannot be empty"),
+  body("description")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("description cannot be empty"),
+  body("startDate")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("startDate cannot be empty"),
+  body("endDate")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("endDate cannot be empty"),
+  body("price").optional().not().isEmpty().withMessage("price cannot be empty"),
+  body("bookingState")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("bookingState cannot be empty"),
+  body("featureImage")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Image cannot be empty"),
+];
+
 // Book a tour
 const newBooking = [
   body("tour").not().isEmpty().withMessage("The provided tour is invalid"),
@@ -70,4 +102,5 @@ module.exports = {
   newBooking,
   singleBooking,
   getBookingsListInBatch,
+  editTour,
 };
