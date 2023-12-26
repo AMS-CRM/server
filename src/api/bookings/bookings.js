@@ -24,6 +24,20 @@ router.get("/", protect, controller.getBookingList);
 
 /**
  *
+ * @API         GET /bookings/contact
+ * @Desc        Get the booking detail of a contact
+ * @Access      Private
+ *
+ */
+router.get(
+  "/contact/:contactId",
+  protect,
+  validator.getContactBookingDetails,
+  controller.getContactBookingDetails
+);
+
+/**
+ *
  * @API     GET /bookings/batch/:batchid
  * @Desc    Get a lsit of bookings in a particular batch
  * @Access  Private

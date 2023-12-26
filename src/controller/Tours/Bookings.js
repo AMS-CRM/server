@@ -244,10 +244,46 @@ const getBookingsListInBatch = asyncHandler(async (req, res) => {
   }
 });
 
+const getContactBookingDetails = asyncHandler(async (req, res) => {
+  // Validation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(3428).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { contactId } = req.params;
+
+    // Get the list of contact bookings
+    const getContactBookings = await BookingsModel.find({
+      members: {
+        $in: [contactId],
+      },
+    })
+      .populate("user")
+      .populate("tour");
+
+    if (!getContactBookings) {
+      res.status(400).setCode(324);
+      throw new Error("Something went wrong when fetching the bookings");
+    }
+
+    return res
+      .status(200)
+      .setCode(422)
+      .setPayload(getContactBookings)
+      .respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   newBooking,
   singleBooking,
   getBookingList,
   getUsersBookingsData,
   getBookingsListInBatch,
+  getContactBookingDetails,
 };

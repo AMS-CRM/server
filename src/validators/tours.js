@@ -91,6 +91,10 @@ const getBookingsListInBatch = [
   param("batchId").not().isEmpty().withMessage("Invalid tour ID"),
 ];
 
+const getContactBookingDetails = [
+  param("contactId").not().isEmpty().withMessage("Invalid contact ID"),
+];
+
 const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
 
 module.exports = {
@@ -103,4 +107,5 @@ module.exports = {
   singleBooking,
   getBookingsListInBatch,
   editTour,
+  getContactBookingDetails,
 };
