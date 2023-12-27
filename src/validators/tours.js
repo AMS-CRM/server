@@ -74,28 +74,64 @@ const createBatch = [
   body("status").isBoolean().withMessage("Please provide a valid status"),
 ];
 
+// Get the single bookings
 const singleBooking = [
   param("bookingId").not().isEmpty().withMessage("Invalid booking Id"),
 ];
 
+// Get the single batch
 const findBatch = [
   param("batch").not().isEmpty().withMessage("Invalid batch ID"),
   param("tour").not().isEmpty().withMessage("Invalid tour ID"),
 ];
 
+// List all the batches
 const listBatch = [
   param("tour").not().isEmpty().withMessage("Invalid tour ID"),
 ];
 
+// Get the bookings list for a specific batch
 const getBookingsListInBatch = [
   param("batchId").not().isEmpty().withMessage("Invalid tour ID"),
 ];
 
+// Get the bookings list for a particular contact
 const getContactBookingDetails = [
   param("contactId").not().isEmpty().withMessage("Invalid contact ID"),
 ];
 
+// Get the tour informatiom
 const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
+
+// Delete the batch
+const deleteSelectedBatch = [
+  body("batchId").not().isEmpty().withMessage("Batch Id is not defined"),
+];
+
+// Edit the batch
+const editSelectedbatch = [
+  body("tourId").not().isEmpty().withMessage("Tour ID is not valid"),
+  body("batchId").not().isEmpty().withMessage("Batch ID is not valid"),
+  body("name").optional().not().isEmpty().withMessage("Batch name is required"),
+  body("startDate")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Start date is required"),
+  body("endDate")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("End Date is required"),
+];
+
+// Set the batch status
+const changeBatchStatus = [
+  body("batchId").not().isEmpty().withMessage("Batch id is not defined"),
+  body("status").not().isEmpty().withMessage("status is not provided"),
+];
+
+// Set the tour status -- Uses the same controller as edit
 
 module.exports = {
   createTour,
@@ -108,4 +144,7 @@ module.exports = {
   getBookingsListInBatch,
   editTour,
   getContactBookingDetails,
+  deleteSelectedBatch,
+  editSelectedbatch,
+  changeBatchStatus,
 };

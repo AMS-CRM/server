@@ -1,6 +1,6 @@
 const ToursModel = require("../../models/Tours.model");
 
-const { validationResult } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 
 // Controller to create a new batch
@@ -128,8 +128,51 @@ const changeBatchStatus = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to edit the selected batch
+const editSelectedbatch = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(7345).setPayload(errors.array());
+    throw new Error(error);
+  }
+
+  try {
+    const { tourId, batchId, ...updatedData } = matchedData(req);
+
+    // Change the keys
+    Object.keys(updatedData).forEach((key) => {
+      updatedData[`batch.$.${key}`] = updatedData[key];
+      delete updatedData[key];
+    });
+
+    // Update the current batch data
+    const updatedBatchData = await ToursModel.findOneAndUpdate(
+      {
+        _id: tourId,
+        "batch._id": batchId,
+      },
+      {
+        ...updatedData,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedBatchData) {
+      res.status(400).setCode(343);
+      throw new Error("Error updating the batch");
+    }
+
+    return res.status(200).setCode(873).setPayload(updatedBatchData).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createBatch,
   findBatch,
   listBatch,
+  editSelectedbatch,
 };

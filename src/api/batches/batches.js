@@ -35,4 +35,18 @@ router.get("/list/:tour", protect, validator.listBatch, controller.listBatch);
  */
 router.get("/:tour/:batch", protect, validator.findBatch, controller.findBatch);
 
+/**
+ *
+ * @API     PUT /batch/:batch
+ * @Desc    Edit the current batch
+ * @Access  Private
+ *
+ */
+router.put(
+  "/",
+  protect,
+  validator.editSelectedbatch,
+  controller.editSelectedbatch
+);
+
 module.exports = router;
