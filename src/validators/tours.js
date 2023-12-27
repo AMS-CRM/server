@@ -126,9 +126,8 @@ const editSelectedbatch = [
 ];
 
 // Set the batch status
-const changeBatchStatus = [
+const changePrimaryBatch = [
   body("batchId").not().isEmpty().withMessage("Batch id is not defined"),
-  body("status").not().isEmpty().withMessage("status is not provided"),
 ];
 
 // Set the tour status -- Uses the same controller as edit
@@ -146,5 +145,5 @@ module.exports = {
   getContactBookingDetails,
   deleteSelectedBatch,
   editSelectedbatch,
-  changeBatchStatus,
+  changePrimaryBatch,
 };

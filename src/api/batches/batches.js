@@ -37,7 +37,7 @@ router.get("/:tour/:batch", protect, validator.findBatch, controller.findBatch);
 
 /**
  *
- * @API     PUT /batch/:batch
+ * @API     PUT /batch
  * @Desc    Edit the current batch
  * @Access  Private
  *
@@ -47,6 +47,20 @@ router.put(
   protect,
   validator.editSelectedbatch,
   controller.editSelectedbatch
+);
+
+/**
+ *
+ * @API     POST /batch
+ * @Desc    Change the primary batch
+ * @Access  Private
+ *
+ */
+router.post(
+  "/status",
+  protect,
+  validator.changePrimaryBatch,
+  controller.changePrimaryBatch
 );
 
 module.exports = router;

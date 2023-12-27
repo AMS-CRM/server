@@ -170,9 +170,51 @@ const editSelectedbatch = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to make a batch primary
+const changePrimaryBatch = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(3423).setPayload(errors.array());
+    throw new Error(error);
+  }
+
+  try {
+    const { tourId, batchId } = req.body;
+
+    // Change the status
+    const changeBatchStatus = await ToursModel.findOneAndUpdate(
+      {
+        _id: tourId,
+        "batch._id": batchId,
+      },
+      {
+        $set: {
+          "batch.$[].status": false,
+        },
+        $set: {
+          "batch.$.status": true,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!changeBatchStatus) {
+      res.status(400).setCode(1244);
+      throw new Error("Something went wrong when changing the batch status");
+    }
+
+    return res.status(200).setCode(243).setPayload(changeBatchStatus).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createBatch,
   findBatch,
   listBatch,
   editSelectedbatch,
+  changePrimaryBatch,
 };
