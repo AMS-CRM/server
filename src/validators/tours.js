@@ -127,8 +127,12 @@ const editSelectedbatch = [
 
 // Set the batch status
 const changePrimaryBatch = [
+  body("tourId").not().isEmpty().withMessage("Batch id is not defined"),
   body("batchId").not().isEmpty().withMessage("Batch id is not defined"),
 ];
+
+// Delete a batch
+const deleteBatch = [...changePrimaryBatch];
 
 // Set the tour status -- Uses the same controller as edit
 
@@ -146,4 +150,5 @@ module.exports = {
   deleteSelectedBatch,
   editSelectedbatch,
   changePrimaryBatch,
+  deleteBatch,
 };

@@ -1,4 +1,5 @@
 const ToursModel = require("../../models/Tours.model");
+const Bookings = require("../../models/bookings.model");
 
 const { validationResult, matchedData } = require("express-validator");
 const asyncHandler = require("express-async-handler");
@@ -211,10 +212,53 @@ const changePrimaryBatch = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to delete a batch
+const deleteBatch = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(746).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { tourId, batchId } = req.body;
+
+    // Check if there are any bookings in batch
+    const checkBatchBookings = await Bookings.findOne({
+      batch: batchId,
+    });
+
+    if (checkBatchBookings) {
+      throw new Error("Cannot delete batch with bookings");
+    }
+
+    // Delete the batch
+    const deleteBatch = await ToursModel.updateOne(
+      {
+        _id: tourId,
+      },
+      { $pull: { batch: { _id: batchId } } },
+      {
+        new: true,
+      }
+    );
+
+    if (!deleteBatch) {
+      res.status(400).setCode(530);
+      throw new Error("Something went wrong when deleting the batch");
+    }
+
+    return res.status(200).setCode(2334).setPayload(deleteBatch).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createBatch,
   findBatch,
   listBatch,
   editSelectedbatch,
   changePrimaryBatch,
+  deleteBatch,
 };

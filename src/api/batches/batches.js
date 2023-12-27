@@ -63,4 +63,13 @@ router.post(
   controller.changePrimaryBatch
 );
 
+/**
+ *
+ * @API     POST /batch
+ * @Desc    Change the primary batch
+ * @Access  Private
+ *
+ */
+router.delete("/", protect, validator.deleteBatch, controller.deleteBatch);
+
 module.exports = router;
