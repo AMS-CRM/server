@@ -181,7 +181,17 @@ const changePrimaryBatch = asyncHandler(async (req, res) => {
 
   try {
     const { tourId, batchId } = req.body;
-
+    // Make all the elements false
+    const disableAllElements = await ToursModel.findOneAndUpdate(
+      {
+        _id: tourId,
+      },
+      {
+        $set: {
+          "batch.$[].status": false,
+        },
+      }
+    );
     // Change the status
     const changeBatchStatus = await ToursModel.findOneAndUpdate(
       {
@@ -190,15 +200,10 @@ const changePrimaryBatch = asyncHandler(async (req, res) => {
       },
       {
         $set: {
-          "batch.$[].status": false,
-        },
-        $set: {
           "batch.$.status": true,
         },
       },
-      {
-        new: true,
-      }
+      { new: true }
     );
 
     if (!changeBatchStatus) {
