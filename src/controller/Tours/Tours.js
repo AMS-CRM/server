@@ -115,17 +115,27 @@ const getTour = asyncHandler(async (req, res) => {
   }
 
   try {
-    const { _id } = req.body;
+    const { tourId } = req.params;
 
     // Get the list of the tours
-    const tour = await Tour.findOne({ _id });
+    const getTourData = await Tour.findOne(
+      { _id: tourId, "batch.status": true },
+      {
+        name: 1,
+        price: 1,
+        featureImage: 1,
+        status: 1,
+        description: 1,
+        "batch.$": 1,
+      }
+    );
 
-    if (!tour) {
-      res.status(400).setCode(3294);
+    if (!getTourData) {
+      res.status(400).setCode(3432);
       throw new Error("Cannot list the tours");
     }
 
-    return res.status(200).setCode(249).setPayload(tour).respond();
+    return res.status(200).setCode(249).setPayload(getTourData).respond();
   } catch (error) {
     throw new Error(error);
   }

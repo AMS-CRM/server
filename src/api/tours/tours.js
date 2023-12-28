@@ -16,7 +16,7 @@ router.post("/", protect, validator.createTour, controller.createTour);
 /**
  *
  * @API     GET /tours/
- * @Desc    Get a single tour data
+ * @Desc    Get the tours list
  * @access  Private
  *
  */
@@ -24,12 +24,12 @@ router.get("/list", protect, controller.listTours);
 
 /**
  *
- * @API     GET /tours/
+ * @API     GET /tours/:id
  * @Desc    Get a single tour data
  * @access  Private
  *
  */
-router.get("/:id", protect, validator.getTour, controller.getTour);
+router.get("/:tourId", protect, validator.getTour, controller.getTour);
 
 /**
  *

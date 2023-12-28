@@ -101,7 +101,9 @@ const getContactBookingDetails = [
 ];
 
 // Get the tour informatiom
-const getTour = [param("_id").not().isEmpty().withMessage("Invalid tour ID")];
+const getTour = [
+  param("tourId").not().isEmpty().withMessage("Invalid tour ID"),
+];
 
 // Delete the batch
 const deleteSelectedBatch = [
