@@ -39,7 +39,7 @@ router.get(
 /**
  *
  * @API     GET /bookings/batch/:batchid
- * @Desc    Get a lsit of bookings in a particular batch
+ * @Desc    Get a list of bookings in a particular batch
  * @Access  Private
  *
  */

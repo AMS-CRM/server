@@ -131,6 +131,12 @@ const changePrimaryBatch = [
   body("batchId").not().isEmpty().withMessage("Batch id is not defined"),
 ];
 
+// Get the members list within batch
+// Get the single batch
+const getBatchMembers = [
+  body("batchId").not().isEmpty().withMessage("Batch id is not defined"),
+];
+
 // Delete a batch
 const deleteBatch = [...changePrimaryBatch];
 
@@ -151,4 +157,5 @@ module.exports = {
   editSelectedbatch,
   changePrimaryBatch,
   deleteBatch,
+  getBatchMembers,
 };

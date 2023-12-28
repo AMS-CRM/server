@@ -72,4 +72,18 @@ router.post(
  */
 router.delete("/", protect, validator.deleteBatch, controller.deleteBatch);
 
+/**
+ *
+ * @API     POST /batch/memebers
+ * @Desc    Get the list of batch members
+ * @Access  Private
+ *
+ */
+router.post(
+  "/members",
+  protect,
+  validator.getBatchMembers,
+  controller.getBatchMembers
+);
+
 module.exports = router;

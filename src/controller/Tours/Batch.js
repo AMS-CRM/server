@@ -259,6 +259,42 @@ const deleteBatch = asyncHandler(async (req, res) => {
   }
 });
 
+// Get batch member details
+const getBatchMembers = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(200).setCode(3493).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { batchId } = req.body;
+
+    // List members
+    const listMembers = await Bookings.findOne(
+      {
+        batch: batchId,
+      },
+      {
+        _id: 0,
+        members: 1,
+      },
+      {
+        new: true,
+      }
+    ).populate("members");
+
+    if (!listMembers) {
+      res.status(400).setCode(934);
+      throw new Error("Error finding the members");
+    }
+
+    return res.status(200).setCode(6434).setPayload(listMembers).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   createBatch,
   findBatch,
@@ -266,4 +302,5 @@ module.exports = {
   editSelectedbatch,
   changePrimaryBatch,
   deleteBatch,
+  getBatchMembers,
 };
