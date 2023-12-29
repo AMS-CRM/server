@@ -73,4 +73,13 @@ router.get(
   controller.singleBooking
 );
 
+/**
+ *
+ * @API     GET /bookings/current/user
+ * @Desc    Get the bookings of current user
+ * @access  Private
+ *
+ */
+router.get("/current/user", protect, controller.getLoggedInUserBookings);
+
 module.exports = router;

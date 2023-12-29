@@ -18,26 +18,11 @@ const newBooking = asyncHandler(async (req, res) => {
     const { tour, batch, numberOfMembers, ...contact } = req.body;
     const user = req.user._id;
 
-    /* Check if user already started the booking
-    const getTourBatch = await ToursModel.findOne(
-      {
-        _id: tour,
-        "batch._id": batch,
-      },
-      { _id: 0, batch: 1, price: 1 }
-    );*/
-
     const getUserBookingWithBatch = await BookingsModel.findOne({
       tour: tour,
       batch: batch,
       user: user,
     });
-
-    /* return res
-      .status(200)
-      .setCode(200)
-      .setPayload(getUserBookingWithBatch)
-      .respond();*/
 
     // Create a new contact
     const contactCreate = await createContact(req.user._id, contact);
@@ -215,6 +200,29 @@ const getUsersBookingsData = asyncHandler(async (req, res) => {
   }
 });
 
+// Get all the bookings of a particular user
+const getLoggedInUserBookings = asyncHandler(async (req, res) => {
+  try {
+    // User for which we want to fetch bookings
+    const user = req.user._id;
+
+    // Get the single booking
+    const userBookings = await BookingsModel.find({ user })
+      .populate("tour")
+      .populate("user")
+      .populate("members");
+
+    if (!userBookings) {
+      res.status(200).setCode(542);
+      throw new Error("Something went wrong fetching the booking");
+    }
+
+    return res.status(200).setPayload(userBookings).setCode(204).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // Get the list of the bookings within the parctiaurl batch
 const getBookingsListInBatch = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -286,4 +294,5 @@ module.exports = {
   getUsersBookingsData,
   getBookingsListInBatch,
   getContactBookingDetails,
+  getLoggedInUserBookings,
 };
