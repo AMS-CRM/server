@@ -38,6 +38,13 @@ const ToursSchema = new Schema({
       endDate: {
         type: Date,
       },
+      bookings: [
+        {
+          type: String,
+          ref: "Bookings",
+          required: true,
+        },
+      ],
     },
   ],
   createdOn: {

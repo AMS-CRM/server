@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const { validationResult } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
 const createContact = require("../../utils/createContact.js");
 
 // Get the models
@@ -15,7 +15,7 @@ const newBooking = asyncHandler(async (req, res) => {
   }
 
   try {
-    const { tour, batch, numberOfMembers, ...contact } = req.body;
+    const { tour, batch, numberOfMembers, ...contact } = matchedData(req);
     const user = req.user._id;
 
     const getUserBookingWithBatch = await BookingsModel.findOne({
@@ -90,10 +90,13 @@ const newBooking = asyncHandler(async (req, res) => {
         throw new Error("Something went wrong adding new booking to a batch");
       }
 
+      const newBookingResult = await BookingsModel.findOne({
+        _id: createNewBookings._id,
+      }).populate("members");
       return res
         .status(200)
         .setCode(232)
-        .setPayload(createNewBookings)
+        .setPayload(newBookingResult)
         .respond();
     }
 
@@ -110,7 +113,7 @@ const newBooking = asyncHandler(async (req, res) => {
         },
       },
       { new: true }
-    );
+    ).populate("members");
 
     if (!updateUserBookings) {
       res.status(400).setCode(934);
@@ -207,14 +210,64 @@ const getLoggedInUserBookings = asyncHandler(async (req, res) => {
     const user = req.user._id;
 
     // Get the single booking
-    const userBookings = await BookingsModel.find({ user })
-      .populate("tour")
-      .populate("user")
-      .populate("members");
+    const userBookings = await BookingsModel.aggregate([
+      {
+        $match: {
+          user,
+        },
+      },
+      {
+        $lookup: {
+          from: "tours",
+          localField: "tour",
+          foreignField: "_id",
+          as: "tours",
+        },
+      },
+      {
+        $unwind: "$tours",
+      },
+      {
+        $match: {
+          "tours.batch._id": { $toObjectId: "$batch" },
+        },
+      },
+    ]);
 
     if (!userBookings) {
       res.status(200).setCode(542);
       throw new Error("Something went wrong fetching the booking");
+    }
+
+    return res.status(200).setPayload(userBookings).setCode(204).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Get all the bookings of a particular user
+const getLoggedInUserBookingByTour = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setCode(3454).setPayload(errors.array());
+    throw new Error("Validation error");
+  }
+
+  try {
+    // User for which we want to fetch bookings
+    const user = req.user._id;
+    const { tourId, batchId } = req.body;
+
+    // Get the single booking
+    const userBookings = await BookingsModel.findOne({
+      user,
+      tour: tourId,
+      batch: batchId,
+    }).populate("members");
+
+    if (!userBookings) {
+      res.status(400).setCode(542);
+      throw new Error("No data found");
     }
 
     return res.status(200).setPayload(userBookings).setCode(204).respond();
@@ -295,4 +348,5 @@ module.exports = {
   getBookingsListInBatch,
   getContactBookingDetails,
   getLoggedInUserBookings,
+  getLoggedInUserBookingByTour,
 };

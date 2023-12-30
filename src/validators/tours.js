@@ -142,6 +142,9 @@ const getBatchMembers = [
 // Delete a batch
 const deleteBatch = [...changePrimaryBatch];
 
+// Get the booking based on the tour for current user
+const getLoggedInUserBookingByTour = [...changePrimaryBatch];
+
 // Set the tour status -- Uses the same controller as edit
 
 module.exports = {
@@ -160,4 +163,5 @@ module.exports = {
   changePrimaryBatch,
   deleteBatch,
   getBatchMembers,
+  getLoggedInUserBookingByTour,
 };

@@ -82,4 +82,18 @@ router.get(
  */
 router.get("/current/user", protect, controller.getLoggedInUserBookings);
 
+/**
+ *
+ * @API     GET /bookings/current/user
+ * @Desc    Get the bookings of current user
+ * @access  Private
+ *
+ */
+router.post(
+  "/current/user/tour",
+  protect,
+  validator.getLoggedInUserBookingByTour,
+  controller.getLoggedInUserBookingByTour
+);
+
 module.exports = router;

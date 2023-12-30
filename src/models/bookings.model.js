@@ -9,7 +9,6 @@ const bookingSchema = Schema({
   },
   batch: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "batches",
     required: true,
   },
   tour: {
