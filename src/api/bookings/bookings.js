@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const validator = require("../../validators/tours.js");
 const controller = require("../../controller/Tours/Bookings.js");
+const payments = require("../../controller/Tours/payments.js");
 const { protect } = require("../../middleware/authMiddleware");
 
 /**
@@ -94,6 +95,20 @@ router.post(
   protect,
   validator.getLoggedInUserBookingByTour,
   controller.getLoggedInUserBookingByTour
+);
+
+/**
+ *
+ * @API       POST /payments/create
+ * @Desc      Create the user booking payment
+ * @access    Private
+ *
+ */
+router.post(
+  "/payments/create",
+  protect,
+  validator.createBookingPayments,
+  payments.createBookingPayments
 );
 
 module.exports = router;

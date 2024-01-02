@@ -6,6 +6,7 @@ const createContact = require("../../utils/createContact.js");
 const ToursModel = require("../../models/Tours.model.js");
 const BookingsModel = require("../../models/bookings.model.js");
 const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
 // Controller to create a new bookings
 const newBooking = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -219,17 +220,26 @@ const getLoggedInUserBookings = asyncHandler(async (req, res) => {
       {
         $lookup: {
           from: "tours",
+          let: {
+            searchId: {
+              $toObjectId: "$batch",
+            },
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: [
+                  {
+                    batch: { _id: "$$searchId" },
+                  },
+                ],
+              },
+            },
+            { $project: { _id: 0, batch: 1 } },
+          ],
           localField: "tour",
           foreignField: "_id",
           as: "tours",
-        },
-      },
-      {
-        $unwind: "$tours",
-      },
-      {
-        $match: {
-          "tours.batch._id": { $toObjectId: "$batch" },
         },
       },
     ]);

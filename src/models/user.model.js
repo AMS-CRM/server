@@ -35,6 +35,11 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  payments: {
+    stripeCustomerId: {
+      type: String,
+    },
+  },
   type: {
     type: String,
     enum: ["admin", "user", "employee"],

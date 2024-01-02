@@ -145,6 +145,11 @@ const deleteBatch = [...changePrimaryBatch];
 // Get the booking based on the tour for current user
 const getLoggedInUserBookingByTour = [...changePrimaryBatch];
 
+// Validator to create a booking payments
+const createBookingPayments = [
+  body("bookingId").not().isEmpty().withMessage("Invalid booking"),
+];
+
 // Set the tour status -- Uses the same controller as edit
 
 module.exports = {
@@ -164,4 +169,5 @@ module.exports = {
   deleteBatch,
   getBatchMembers,
   getLoggedInUserBookingByTour,
+  createBookingPayments,
 };
