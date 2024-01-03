@@ -39,6 +39,32 @@ const bookingSchema = Schema({
     enum: ["In Progress", "Cancelled", "Booked", "Confirmed", "Refunded"],
     default: "In Progress",
   },
+  recordPayments: [
+    {
+      paymentMethod: {
+        type: String,
+        enum: ["Stripe", "Cash", "Credit Card", "Debit Card"],
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        enum: ["Completed", "Processing"],
+      },
+      createdOn: {
+        type: Date,
+        default: Date.now(),
+        required: true,
+      },
+      reference: {
+        type: String,
+        required: false,
+      },
+    },
+  ],
   payments: {
     amount: {
       type: Number,
@@ -47,15 +73,18 @@ const bookingSchema = Schema({
     status: {
       type: String,
       required: true,
-      enum: ["Paid", "Pending", "Partial Payment"],
+      enum: ["Paid", "Pending", "Partial Paid"],
+      default: "Pending",
+    },
+    remaningBalance: {
+      type: Number,
+      required: true,
+      default: 0,
     },
     amountPaid: {
       type: Number,
-      required: false,
-    },
-    reference: {
-      type: String,
-      required: false,
+      default: 0,
+      required: true,
     },
   },
 });

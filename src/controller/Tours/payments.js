@@ -42,7 +42,7 @@ const createBookingPayments = asyncHandler(async (req, res) => {
           email: bookingPaymentDetails.user.email,
         })
       ).id;
-      console.log(userStripeCustomerId);
+
       // Create the stripe customer
       const createStripeCustomer = await UserModel.findOneAndUpdate(
         {
@@ -71,6 +71,9 @@ const createBookingPayments = asyncHandler(async (req, res) => {
       amount: bookingPaymentDetails.payments.amount,
       currency: "gbp",
       customer: userStripeCustomerId,
+      metadata: {
+        bookingId,
+      },
     });
 
     // Strip object

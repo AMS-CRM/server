@@ -7,6 +7,7 @@ const ToursModel = require("../../models/Tours.model.js");
 const BookingsModel = require("../../models/bookings.model.js");
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
+
 // Controller to create a new bookings
 const newBooking = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
