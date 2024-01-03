@@ -10,6 +10,8 @@ const recordPayment = async ({
   status,
 }) => {
   try {
+    const additionalUpdates = {};
+    let paymentStatus = "Partially Paid";
     // Get the payment amount
     const BookingPayment = await BookingModel.findOne(
       {
@@ -27,8 +29,11 @@ const recordPayment = async ({
 
     // Calculate the new payment
     const amountPaid = BookingPayment.payments.amountPaid + amount;
-    const remaningBalance = amountPaid - BookingPayment.payments.amount;
-    const status = remaningBalance == 0 ? "Paid" : "Partial Paid";
+    const remaningBalance = remaningBalance - amount;
+    if (remaningBalance == 0) {
+      paymentStatus = "Paid";
+      additionalUpdates["status"] = "Booked";
+    }
 
     const newPaymentRecordData = {
       paymentMethod,
@@ -42,9 +47,10 @@ const recordPayment = async ({
         _id: bookingId,
       },
       {
+        ...additionalUpdates,
         "payments.amountPaid": amountPaid,
         "payments.remaningBalance": remaningBalance,
-        "payments.status": status,
+        "payments.status": paymentStatus,
         $push: {
           recordPayments: newPaymentRecordData,
         },

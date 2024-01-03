@@ -68,7 +68,7 @@ const createBookingPayments = asyncHandler(async (req, res) => {
     );
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: bookingPaymentDetails.payments.amount,
+      amount: bookingPaymentDetails.payments.amount * 100,
       currency: "gbp",
       customer: userStripeCustomerId,
       metadata: {

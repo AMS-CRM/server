@@ -73,7 +73,7 @@ const bookingSchema = Schema({
     status: {
       type: String,
       required: true,
-      enum: ["Paid", "Pending", "Partial Paid"],
+      enum: ["Paid", "Pending", "Partially Paid"],
       default: "Pending",
     },
     remaningBalance: {
