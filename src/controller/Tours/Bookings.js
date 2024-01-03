@@ -220,27 +220,14 @@ const getLoggedInUserBookings = asyncHandler(async (req, res) => {
       {
         $lookup: {
           from: "tours",
-          let: {
-            searchId: {
-              $toObjectId: "$batch",
-            },
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: [
-                  {
-                    batch: { _id: "$$searchId" },
-                  },
-                ],
-              },
-            },
-            { $project: { _id: 0, batch: 1 } },
-          ],
+
           localField: "tour",
           foreignField: "_id",
           as: "tours",
         },
+      },
+      {
+        $unwind: "$tours",
       },
     ]);
 

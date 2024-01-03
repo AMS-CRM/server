@@ -5,6 +5,6 @@
   "countries": "/countries/countries.js",
   "tours": "/tours/tours.js",
   "batch": "/batches/batches.js",
-  "bookings": "/bookings/bookings.js"
-
+  "bookings": "/bookings/bookings.js",
+  "webhooks": "/webhook/stripe.js"
 }
