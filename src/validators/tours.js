@@ -1,6 +1,11 @@
 const { body, param } = require("express-validator");
 const { createContact } = require("./contacts");
 
+// List tours
+const listTours = [
+  param("search").optional().notEmpty().withMessage("Invalid search query"),
+];
+
 // Create a tour
 const createTour = [
   body("name").not().isEmpty().withMessage("Name cannot be empty"),
@@ -165,6 +170,7 @@ module.exports = {
   getContactBookingDetails,
   deleteSelectedBatch,
   editSelectedbatch,
+  listTours,
   changePrimaryBatch,
   deleteBatch,
   getBatchMembers,

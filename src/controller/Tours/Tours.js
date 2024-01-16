@@ -88,8 +88,21 @@ const createTour = asyncHandler(async (req, res) => {
  */
 const listTours = asyncHandler(async (req, res) => {
   try {
+    // Get the query
+    const query = matchedData(req);
+    console.log(query);
+
+    let searchQuery = {};
+    if (query["search"]) {
+      searchQuery = {
+        name: new RegExp(`${query["search"]}`),
+      };
+    }
+
+    console.log(searchQuery);
+
     // Get the list of the tours
-    const Tours = await Tour.find({});
+    const Tours = await Tour.find(searchQuery);
 
     if (!Tours) {
       res.status(400).setCode(3294);

@@ -15,12 +15,17 @@ router.post("/", protect, validator.createTour, controller.createTour);
 
 /**
  *
- * @API     GET /tours/
+ * @API     GET /tours/list/{search}
  * @Desc    Get the tours list
  * @access  Private
  *
  */
-router.get("/list", protect, controller.listTours);
+router.get(
+  "/list/:search?",
+  protect,
+  validator.listTours,
+  controller.listTours
+);
 
 /**
  *
