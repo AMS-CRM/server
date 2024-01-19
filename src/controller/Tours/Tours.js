@@ -99,8 +99,6 @@ const listTours = asyncHandler(async (req, res) => {
       };
     }
 
-    console.log(searchQuery);
-
     // Get the list of the tours
     const Tours = await Tour.find(searchQuery);
 

@@ -261,7 +261,9 @@ const getLoggedInUserBookingByTour = asyncHandler(async (req, res) => {
       user,
       tour: tourId,
       batch: batchId,
-    }).populate("members");
+    })
+      .populate("members")
+      .populate("tour");
 
     if (!userBookings) {
       res.status(400).setCode(542);
