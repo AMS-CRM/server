@@ -47,6 +47,15 @@ router.patch(
   controller.updatePushNotificationToken
 );
 
+/**
+ *
+ * @API       Delete /
+ * @Desc      API to delete the user account
+ * @Access    Private
+ *
+ */
+router.delete("/", protect, controller.deleteUserAccount);
+
 router.post(
   "/updateBankInformation",
   protect,

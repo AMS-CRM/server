@@ -35,6 +35,11 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  status: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
   payments: {
     stripeCustomerId: {
       type: String,

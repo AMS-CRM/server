@@ -167,7 +167,7 @@ const phoneLogin = asyncHandler(async (req, res) => {
     }
 
     // Check if the user exists
-    const userExists = await User.findOne({ phone });
+    const userExists = await User.findOne({ phone, status: true });
     const user = !userExists ? await User.create({ phone }) : userExists;
 
     // Set the verfication code

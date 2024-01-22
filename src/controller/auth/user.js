@@ -264,6 +264,31 @@ const editUser = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to delete de-activate the user account
+const deleteUserAccount = asyncHandler(async (req, res) => {
+  try {
+    const user = req.user._id;
+
+    const response = await User.findOneAndUpdate(
+      { _id: user },
+      {
+        status: false,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!response) {
+      throw new Error("Something went wrong when deleting the account");
+    }
+
+    return res.status(200).setCode(234).setPayload(response).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   getUser,
   editUser,
@@ -272,4 +297,5 @@ module.exports = {
   updatePushNotificationStatus,
   updatePushNotificationToken,
   editUserBankDetails,
+  deleteUserAccount,
 };
