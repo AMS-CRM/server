@@ -90,7 +90,6 @@ const listTours = asyncHandler(async (req, res) => {
   try {
     // Get the query
     const query = matchedData(req);
-    console.log(query);
 
     let searchQuery = {};
     if (query["search"]) {
@@ -143,7 +142,7 @@ const getTour = asyncHandler(async (req, res) => {
 
     if (!getTourData) {
       res.status(400).setCode(3432);
-      throw new Error("Cannot list the tours");
+      throw new Error("Cannot find the tour");
     }
 
     return res.status(200).setCode(249).setPayload(getTourData).respond();

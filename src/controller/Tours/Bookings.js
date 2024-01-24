@@ -6,7 +6,6 @@ const createContact = require("../../utils/createContact.js");
 const ToursModel = require("../../models/Tours.model.js");
 const BookingsModel = require("../../models/bookings.model.js");
 const mongoose = require("mongoose");
-const { ObjectId } = require("mongodb");
 
 // Controller to create a new bookings
 const newBooking = asyncHandler(async (req, res) => {
@@ -46,7 +45,7 @@ const newBooking = asyncHandler(async (req, res) => {
     if (!getUserBookingWithBatch) {
       // Create new bookings
       // Calculate the booking amount
-      const amount = getTourBatch.price * numberOfMembers;
+      const amount = getTourBatch.price;
 
       // Create a new booking
       const newBookingData = {
@@ -102,6 +101,10 @@ const newBooking = asyncHandler(async (req, res) => {
         .respond();
     }
 
+    // Generate a new amount
+    const amount =
+      (getUserBookingWithBatch.members.length + 1) * getTourBatch.price;
+
     //Update the current booking
     const updateUserBookings = await BookingsModel.findOneAndUpdate(
       {
@@ -110,6 +113,9 @@ const newBooking = asyncHandler(async (req, res) => {
         user: user,
       },
       {
+        payments: {
+          amount: amount,
+        },
         $push: {
           members: contactCreate._id,
         },

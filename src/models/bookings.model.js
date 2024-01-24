@@ -22,7 +22,7 @@ const bookingSchema = Schema({
   },
   numberOfMembers: {
     type: Number,
-    required: true,
+    required: false,
   },
   members: [
     {

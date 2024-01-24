@@ -63,10 +63,6 @@ const editTour = [
 const newBooking = [
   body("tour").not().isEmpty().withMessage("The provided tour is invalid"),
   body("batch").not().isEmpty().withMessage("The provided tour is invalid"),
-  body("numberOfMembers")
-    .not()
-    .isEmpty()
-    .withMessage("Please provide number of members"),
   ...createContact,
 ];
 
