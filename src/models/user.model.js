@@ -13,6 +13,15 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  wishlist: {
+    tours: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tours",
+        required: false,
+      },
+    ],
+  },
   type: {
     type: String,
     required: true,
