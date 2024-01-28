@@ -197,12 +197,16 @@ const updatePushNotificationToken = asyncHandler(async (req, res) => {
       {
         _id: userId,
       },
-      { pushNotificationToken: pushNotificationToken }
+      {
+        pushNotificationToken: pushNotificationToken,
+        allowedPushNotifications: true,
+      }
     );
 
     if (!updateNotificationToken) {
       throw new Error("Cannot update the push token");
     }
+
     // Update the courier profile
     const updateCourierProfile = await createCourierProfile(
       userId,
