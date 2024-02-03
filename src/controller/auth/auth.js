@@ -171,7 +171,7 @@ const phoneLogin = asyncHandler(async (req, res) => {
     const user = !userExists ? await User.create({ phone }) : userExists;
 
     // Set the verfication code
-    let phoneNumber;
+    let phoneNumber = true;
     let verification = "approved";
 
     if (process.env.NODE_ENV == "production") {
@@ -179,7 +179,6 @@ const phoneLogin = asyncHandler(async (req, res) => {
 
       verification = await verifyOneTimePassword(phoneNumber, code);
     }
-
     // Send the verfication code
     if (!phoneNumber || verification !== "approved") {
       res.status(400).setCode(432);
