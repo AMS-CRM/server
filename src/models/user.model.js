@@ -22,10 +22,14 @@ const userSchema = new Schema({
       },
     ],
   },
+  address: {
+    type: String,
+    required: false,
+  },
   type: {
     type: String,
     required: true,
-    defaulter: "tenet",
+    default: "tenet",
   },
   accountVerified: {
     type: Boolean,

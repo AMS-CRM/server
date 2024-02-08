@@ -1,5 +1,9 @@
 const { body } = require("express-validator");
 
+const editUserAddress = [
+  body("address").notEmpty().withMessage("Address cannot be empty"),
+];
+
 const editUser = [
   body("email").optional().isEmail().withMessage("Email provided is incorrect"),
   body("name")
@@ -87,4 +91,5 @@ module.exports = {
   updatePushNotificationStatus,
   updatePushNotificationToken,
   updateBankDetails,
+  editUserAddress,
 };

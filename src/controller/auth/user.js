@@ -12,6 +12,7 @@ const {
 
 // Get the models
 const User = require("../../models/user.model");
+const userModel = require("../../models/user.model");
 
 // Get user balance balance
 const getUserBalance = asyncHandler(async (req, res) => {
@@ -222,6 +223,40 @@ const updatePushNotificationToken = asyncHandler(async (req, res) => {
   }
 });
 
+// Edit the user address
+const editUserAddress = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).setPayload(errors.array()).setCode(343);
+    throw new Error("Validation error");
+  }
+
+  try {
+    const { address } = req.body;
+
+    const editAddress = await userModel.findOneAndUpdate(
+      {
+        user: req.user._id,
+      },
+      {
+        address: address,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!editAddress) {
+      res.status(400).setCode(300);
+      throw new Error("Cannot edit the user address");
+    }
+
+    return res.status(200).setCode(234).setPayload(editAddress).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 // Edit the current user data
 const editUser = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -302,4 +337,5 @@ module.exports = {
   updatePushNotificationToken,
   editUserBankDetails,
   deleteUserAccount,
+  editUserAddress,
 };
