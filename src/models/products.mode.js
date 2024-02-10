@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const categoriesSchema = Schema({
+const productSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -10,26 +10,23 @@ const categoriesSchema = Schema({
     type: String,
     required: true,
   },
-  iconImage: {
+  price: {
     type: String,
     required: true,
   },
-  featureImage: [
-    {
-      type: String,
-      required: false,
-    },
-  ],
-  status: {
-    type: Boolean,
+  featuresImage: {
+    type: String,
     required: true,
-    default: true,
   },
   createdOn: {
     type: Date,
     default: new Date.now(),
+    required: true,
   },
-  subCategories: [categoriesSchema],
+  category: {
+    type: Schema.Types.ObjectId,
+    ref: "categories",
+  },
 });
 
-module.exports = Categories = mongoose.model("Categories", categoriesSchema);
+module.exports = products = mongoose.modal("products", productSchema);

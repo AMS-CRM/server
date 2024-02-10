@@ -32,6 +32,7 @@ const login = asyncHandler(async (req, res) => {
         _id: user.id,
         email: user.email,
         name: user.name,
+        address: user.address,
         token: generateToken(user._id),
       })
       .respond();
@@ -192,6 +193,7 @@ const phoneLogin = asyncHandler(async (req, res) => {
         _id: user.id,
         name: user.name || null,
         email: user.email || null,
+        address: user.address || null,
         accountVerified: user.paymentsId ? true : false,
         type: user.type || null,
         token: generateToken(user._id),
