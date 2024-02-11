@@ -27,9 +27,14 @@ const categoriesSchema = Schema({
   },
   createdOn: {
     type: Date,
-    default: new Date.now(),
+    default: Date.now(),
   },
-  subCategories: [categoriesSchema],
+  subCategories: [
+    {
+      type: String,
+      ref: "categories",
+    },
+  ],
 });
 
 module.exports = Categories = mongoose.model("Categories", categoriesSchema);

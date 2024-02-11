@@ -13,6 +13,16 @@ const createNewOrder = [
     .withMessage("Item quantity cannot be empty"),
 ];
 
+const removeOrderItem = [
+  body("orderId").notEmpty().withMessage("Order Id is not provided"),
+  body("itemId").notEmpty().withMessage("Item id is not provided"),
+  body("quantity")
+    .notEmpty()
+    .isNumeric()
+    .withMessage("Invalid qunatity provided"),
+];
+
 module.exports = {
   createNewOrder,
+  removeOrderItem,
 };

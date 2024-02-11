@@ -6,19 +6,23 @@ const orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
   },
-  itemList: [
+  items: [
     {
       item: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "products",
       },
-      qunatity: {
+      quantity: {
         type: String,
         required: true,
       },
       amount: {
-        type: String,
+        type: Number,
         reqiured: true,
+      },
+      price: {
+        type: Number,
+        required: true,
       },
       notes: {
         type: String,
@@ -29,8 +33,7 @@ const orderSchema = new Schema({
   recordPayments: {
     method: {
       type: String,
-      enum: ["UPI", "COD", ""],
-      required: true,
+      enum: ["UPI", "COD"],
     },
     referenceObject: {
       type: Map,

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema();
+const Schema = mongoose.Schema;
 
-const productSchema = Schema({
+const productSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -13,7 +13,7 @@ const productSchema = Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Categories",
-    required: true,
+    required: false,
   },
   subCategories: [
     {
@@ -24,6 +24,10 @@ const productSchema = Schema({
   metaData: {
     type: Map,
     of: String,
+  },
+  price: {
+    type: Number,
+    required: true,
   },
   varients: [
     {

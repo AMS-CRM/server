@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { protect } = require("../../middleware/authMiddleware");
 const controller = require("../../controller/products/products");
+const validation = require("../../validators/products");
 
 /**
  *
@@ -10,6 +11,11 @@ const controller = require("../../controller/products/products");
  * @access  Private
  *
  */
-router.post("/", protect, controller.createNewProduct);
+router.post(
+  "/",
+  protect,
+  validation.createNewProduct,
+  controller.createNewProduct
+);
 
 module.exports = router;

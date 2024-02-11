@@ -7,5 +7,6 @@
   "batch": "/batches/batches.js",
   "bookings": "/bookings/bookings.js",
   "wishlist": "/wishlist/wishlist.js",
-  "orders": "/orders/orders.js"
+  "orders": "/orders/orders.js",
+   "products": "/products/products.js"
 }
