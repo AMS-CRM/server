@@ -14,6 +14,20 @@ router.post("/", protect, validation.createNewOrder, controller.createNewOrder);
 
 /*
  *
+ * @API       PUT /orders
+ * @Desc      Add new product to an order
+ * @Access    Private
+ *
+ */
+router.put(
+  "/",
+  protect,
+  validation.addProductToOrder,
+  controller.addProductToOrder
+);
+
+/*
+ *
  * @API       Patch /orders
  * @Desc      Remove item from order
  * @Access    Private

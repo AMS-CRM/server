@@ -101,6 +101,58 @@ const listUserOrders = asyncHandler(async (req, res) => {
 });
 
 // Controller to add item to the cart
+const addProductToOrder = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(200).setPayload(errors.array()).setCode(334);
+    throw new Error("Validation error");
+  }
+
+  try {
+    const user = req.user._id;
+    const { orderId, itemId, quantity } = matchedData(req);
+
+    // Check if the products exists
+    const product = await ProductsModel.findOne({
+      _id: itemId,
+    });
+
+    if (!product) {
+      res.status(400).setCode(4332);
+      throw new Error("Invalid product provided");
+    }
+
+    const order = await OrdersModel.findOne({
+      _id: orderId,
+      user: user,
+    });
+
+    if (!order) {
+      res.status(400).setCode(4332);
+      throw new Error("Invalid order provided");
+    }
+
+    const totalProductAmount = product.price * quantity;
+    order.items.push({
+      item: itemId,
+      quantity,
+      price: product.price,
+      amount: totalProductAmount,
+    });
+
+    order.payments.totalAmount += totalProductAmount;
+    console.log(order);
+    const saveUpdatedOrder = await order.save();
+    if (!saveUpdatedOrder) {
+      res.status(400).setCode(343);
+      throw new Error("Something went wrong when creating new order");
+    }
+
+    return res.status(200).setCode(243).setPayload(saveUpdatedOrder).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 // Controller to edit the user orders
 const removeOrderItem = asyncHandler(async (req, res) => {
@@ -173,5 +225,6 @@ const removeOrderItem = asyncHandler(async (req, res) => {
 module.exports = {
   createNewOrder,
   listUserOrders,
+  addProductToOrder,
   removeOrderItem,
 };

@@ -5,7 +5,7 @@ const createNewOrder = [
   body("items.*.id").not().isEmpty().withMessage("Invalid item provided"),
   body("items.*.quantity")
     .notEmpty()
-    .isNumeric()
+    .isFloat({ min: 1 })
     .withMessage("Item quantity is valid"),
   body("items.*.note")
     .optional()
@@ -22,7 +22,18 @@ const removeOrderItem = [
     .withMessage("Invalid qunatity provided"),
 ];
 
+const addProductToOrder = [
+  body("orderId").notEmpty().withMessage("Order Id is not provided"),
+  body("itemId").notEmpty().withMessage("Item id is not provided"),
+  body("quantity")
+    .notEmpty()
+    .isFloat({ min: 1 })
+    .withMessage("Invalid qunatity provided"),
+  body("notes").optional().notEmpty().withMessage("Notes cannot be empty"),
+];
+
 module.exports = {
   createNewOrder,
   removeOrderItem,
+  addProductToOrder,
 };
