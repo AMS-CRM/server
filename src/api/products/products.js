@@ -18,4 +18,13 @@ router.post(
   controller.createNewProduct
 );
 
+/**
+ *
+ * @API     POST /products
+ * @Desc    Create new product
+ * @access  Private
+ *
+ */
+router.post("/list", protect, validation.listProducts, controller.listProducts);
+
 module.exports = router;

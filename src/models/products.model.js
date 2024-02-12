@@ -15,6 +15,10 @@ const productSchema = new Schema({
     ref: "Categories",
     required: false,
   },
+  tags: {
+    type: String,
+    required: false,
+  },
   subCategories: [
     {
       type: mongoose.Schema.Types.ObjectId,

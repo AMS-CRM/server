@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 
 const createNewProduct = [
   body("name").notEmpty().withMessage("Product cannot be empty"),
@@ -9,6 +9,17 @@ const createNewProduct = [
   //body("category").notEmpty().withMessage("Category cannot be empty"),
 ];
 
+// List products
+const listProducts = [
+  body("searchQuery")
+    .optional()
+    .not()
+    .isEmpty()
+    .withMessage("Page is not defined"),
+  body("page").not().isEmpty().withMessage("Page is not defined"),
+];
+
 module.exports = {
   createNewProduct,
+  listProducts,
 };
