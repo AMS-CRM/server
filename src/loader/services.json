@@ -8,5 +8,6 @@
   "bookings": "/bookings/bookings.js",
   "wishlist": "/wishlist/wishlist.js",
   "orders": "/orders/orders.js",
-   "products": "/products/products.js"
+  "products": "/products/products.js",
+  "categories": "/categories/categories.js"
 }

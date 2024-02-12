@@ -46,7 +46,6 @@ const listProducts = asyncHandler(async (req, res) => {
       query.name = { $regex: new RegExp(searchQuery, "i") };
     }
 
-    console.log(query);
     // Get the list of the products
     const products = await ProductsModel.find(query, {
       skip: skip,
