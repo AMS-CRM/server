@@ -3,8 +3,6 @@ const stripe = require("stripe")(process.env.STRIPE_KEY);
 const recordPayment = require("../../utils/recordPayment");
 // Stripe webhooks to record a payment
 const stripeWebhook = asyncHandler(async (req, res) => {
-  console.log("sig", sig);
-
   try {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOKS;
