@@ -3,13 +3,14 @@ const stripe = require("stripe")(process.env.STRIPE_KEY);
 const recordPayment = require("../../utils/recordPayment");
 // Stripe webhooks to record a payment
 const stripeWebhook = asyncHandler(async (req, res) => {
+  console.log("sig", sig);
+
   try {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOKS;
-    console.log(sig);
     let event;
     try {
-      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
     } catch (err) {
       res.status(400).setCode(3423);
       throw new Error(`Webhook Error: ${err.message}`);
