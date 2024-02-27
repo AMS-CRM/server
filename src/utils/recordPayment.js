@@ -30,7 +30,7 @@ const recordPayment = async ({
     // Calculate the new payment
     const amountPaid = BookingPayment.payments.amountPaid + amount;
     const remaningBalance = amount - BookingPayment.payments.remaningBalance;
-    if (amountPaid >= payments.amount) {
+    if (amountPaid >= BookingPayment.amount) {
       paymentStatus = "Paid";
       additionalUpdates["status"] = "Booked";
     }

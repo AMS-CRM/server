@@ -7,10 +7,15 @@ const stripeWebhook = asyncHandler(async (req, res) => {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOKS;
     let event;
-    console.log(req["rawBody"]);
+    console.log("sig", req.headers["stripe-signature"]);
+    console.log("body", req.body);
+    console.log("endpoint", endpointSecret);
+    console.log(
+      await stripe.webhooks.constructEvent(req.body, sig, endpointSecret)
+    );
     try {
-      event = stripe.webhooks.constructEvent(
-        req["rawBody"],
+      event = await stripe.webhooks.constructEvent(
+        req.body,
         sig,
         endpointSecret
       );
@@ -26,7 +31,7 @@ const stripeWebhook = asyncHandler(async (req, res) => {
         console.log("payment recorded 2");
 
         const recordNewPayment = await recordPayment({
-          bookingId: paymentIntentSucceeded.charges.data[0].metadata.bookingId,
+          bookingId: "65de579b98c14b2a53a859a6", //paymentIntentSucceeded.charges.data[0].metadata.bookingId,
           paymentMethod: "Stripe",
           amount: paymentIntentSucceeded.amount_received / 100,
           status: "Completed",
@@ -47,6 +52,7 @@ const stripeWebhook = asyncHandler(async (req, res) => {
 
     return res.status(200).setCode(3482).setPayload({}).respond();
   } catch (error) {
+    console.log(error);
     throw new Error(error);
   }
 });

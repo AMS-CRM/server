@@ -14,9 +14,7 @@ const app = express();
 const { stripeWebhook } = require("./src/controller/webhooks/stripe.js");
 app.post(
   "/webhooks/stripe",
-  express.json({
-    verify: (req, res, buffer) => (req["rawBody"] = buffer),
-  }),
+  express.raw({ type: "application/json" }),
   stripeWebhook
 );
 
