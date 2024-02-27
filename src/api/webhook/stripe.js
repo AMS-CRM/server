@@ -9,10 +9,6 @@ const controller = require("../../controller/webhooks/stripe.js");
  * @Access     Public needs the stripe key
  *
  */
-router.post(
-  "/stripe",
-  express.raw({ type: "application/json" }),
-  controller.stripeWebhook
-);
+router.post("/stripe", controller.stripeWebhook);
 
 module.exports = router;

@@ -7,8 +7,13 @@ const stripeWebhook = asyncHandler(async (req, res) => {
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_WEBHOOKS;
     let event;
+    console.log(req["rawBody"]);
     try {
-      event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(
+        req["rawBody"],
+        sig,
+        endpointSecret
+      );
     } catch (err) {
       res.status(400).setCode(3423);
       throw new Error(`Webhook Error: ${err.message}`);

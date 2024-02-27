@@ -12,7 +12,13 @@ const app = express();
 
 // Add the webhooks
 const { stripeWebhook } = require("./src/controller/webhooks/stripe.js");
-app.post("/webhooks/stripe", express.raw({ type: "*/*" }), stripeWebhook);
+app.post(
+  "/webhooks/stripe",
+  express.json({
+    verify: (req, res, buffer) => (req["rawBody"] = buffer),
+  }),
+  stripeWebhook
+);
 
 // Express app middlewares
 app.use(cors());
