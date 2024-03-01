@@ -49,7 +49,7 @@ const createBookingPayments = asyncHandler(async (req, res) => {
           _id: user,
         },
         {
-          "payments.stripeCustomerId": userStripeCustomerId,
+          payments: { stripeCustomerId: userStripeCustomerId },
         }
       );
 
@@ -83,10 +83,11 @@ const createBookingPayments = asyncHandler(async (req, res) => {
       customer: userStripeCustomerId,
       publishableKey: process.env.STRIPE_PUBLIC_KEY,
     };
-
+    console.log(payload);
     // Return the json customer object
     return res.status(200).setPayload(payload).setCode(832).respond();
   } catch (error) {
+    console.log(error);
     throw new Error(error);
   }
 });

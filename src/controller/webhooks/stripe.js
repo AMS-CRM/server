@@ -26,7 +26,7 @@ const stripeWebhook = asyncHandler(async (req, res) => {
         console.log("payment recorded 2");
 
         const recordNewPayment = await recordPayment({
-          bookingId: paymentIntentSucceeded.charges.data[0].metadata.bookingId,
+          bookingId: paymentIntentSucceeded.metadata.bookingId,
           paymentMethod: "Stripe",
           amount: paymentIntentSucceeded.amount_received / 100,
           status: "Completed",
