@@ -12,5 +12,7 @@
   "organizations": "/organizations/index.js",
   "transactions": "/transactions/transactions.js",
   "jobs": "/jobs/jobs.js",
-  "properties": "/properties/properties.js"
+  "properties": "/properties/properties.js",
+  "notifications": "/notifications/notifications.js",
+   "projects": "/projects/projects.js"
 }

@@ -25,7 +25,10 @@ const login = asyncHandler(async (req, res) => {
 
   // Check for user email
   const user = await User.findOne({ email });
+
   if (user && (await bcrypt.compare(password, user.password))) {
+    // Create a new API key and default project for the user
+
     res
       .setCode(233)
       .setPayload({
@@ -205,6 +208,7 @@ const phoneLogin = asyncHandler(async (req, res) => {
 
 const sendOneTimePassword = asyncHandler(async (req, res) => {
   const { phone } = req.body;
+
   const phoneNumber = verifyPhoneNumber(phone);
 
   if (!phoneNumber) {
