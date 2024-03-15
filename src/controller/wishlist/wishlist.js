@@ -40,7 +40,7 @@ const createWishList = asyncHandler(async (req, res) => {
       },
       {
         $push: {
-          [`wishlist.${category}`]: "65b0335f72c8b49c7f53966b",
+          [`wishlist.${category}`]: wishlistItem,
         },
       },
       {
