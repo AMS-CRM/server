@@ -5,7 +5,7 @@ const controller = require("../../controller/notifications");
 const { protect } = require("../../middleware/authMiddleware");
 /**
  *
- * @API     GET /notitications
+ * @API     POST /notitications
  * @Desc    Register a new notitication
  * @access  Private
  *
@@ -15,4 +15,14 @@ router.post(
   validator.registerNotification,
   controller.registerNewPushNotification
 );
+
+/**
+ *
+ * @API     GET /notitications
+ * @Desc    Get the list of all notification of a project
+ * @access  Private
+ *
+ **/
+router.get("/", protect, controller.getNotificationslist);
+
 module.exports = router;

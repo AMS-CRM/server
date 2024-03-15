@@ -1,8 +1,6 @@
 const logger = require("./logger.js");
 
 const errorHandler = (err, req, res, next) => {
-  console.log("handle here");
-
   const statusCode = res.statusCode ? res.statusCode : 500;
   res.status(statusCode);
   res.success = false;

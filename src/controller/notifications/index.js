@@ -43,6 +43,25 @@ const registerNewPushNotification = asyncHandler(async (req, res) => {
   }
 });
 
+// Get the list of the notitications
+const getNotificationslist = asyncHandler(async (req, res) => {
+  try {
+    // Get the list of notifications
+    const response = await notificationModel.find({
+      user: req.user._id,
+    });
+
+    if (!response) {
+      throw new Error("There is no notifications to list");
+    }
+
+    return res.status(200).setCode(232).setPayload(response).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
 module.exports = {
   registerNewPushNotification,
+  getNotificationslist,
 };
