@@ -1,18 +1,7 @@
 {
   "auth": "/auth/auth.js",
-  "tests": "/tests/tests.js",
-  "modules": "/tests/modules.js",
   "user": "/user/users.js",
-  "services": "/services/services.js",
-  "roles": "/user/roles.js",
-  "groups": "/user/groups.js",
-  "orders": "/billing/orders.js",
-  "contacts": "/contacts/contacts.js",
   "countries": "/countries/countries.js",
-  "organizations": "/organizations/index.js",
-  "transactions": "/transactions/transactions.js",
-  "jobs": "/jobs/jobs.js",
-  "properties": "/properties/properties.js",
   "notifications": "/notifications/notifications.js",
-   "projects": "/projects/projects.js"
+  "projects": "/projects/projects.js"
 }

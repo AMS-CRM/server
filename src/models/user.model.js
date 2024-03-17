@@ -31,10 +31,6 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
-  paymentsId: {
-    type: String,
-    required: false,
-  },
   type: {
     type: String,
     enum: ["admin", "user", "employee"],
@@ -49,31 +45,6 @@ const userSchema = new Schema({
     type: Boolean,
     required: false,
   },
-  balance: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  lifeTimeEarnings: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
-  package: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "packages",
-    required: false,
-  },
-  role: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "roles",
-    required: false,
-  },
-  organization: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "organzations",
-    required: false,
-  },
   subscriptions: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -81,10 +52,6 @@ const userSchema = new Schema({
       required: false,
     },
   ],
-  group: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "groups",
-  },
 });
 
 module.exports = user = mongoose.model("user", userSchema);
