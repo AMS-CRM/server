@@ -12,7 +12,7 @@ const bodyParser = require("body-parser");
  *
  */
 router.post(
-  "/stripe",
+  "/session",
   protect,
   bodyParser.raw({ type: "application/json" }),
   controller.createSubscriptionLink

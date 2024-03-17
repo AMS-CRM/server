@@ -15,7 +15,11 @@ const { stripeWebhook } = require("./src/controller/webhooks/stripe.js");
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 
-app.post("/webhooks/stripe", stripeWebhook);
+app.post(
+  "/webhooks/stripe",
+  express.raw({ type: "application/json" }),
+  stripeWebhook
+);
 
 app.use(express.json());
 app.use(logger);

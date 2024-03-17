@@ -26,7 +26,7 @@ const subscriptionSchema = new Schema({
     {
       method: {
         type: String,
-        enum: ["Freemium", "Razorpay"],
+        enum: ["Freemium", "Stripe"],
         required: true,
       },
       creationTime: {

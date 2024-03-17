@@ -41,6 +41,23 @@ const createProject = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to list the user projects
+const listUserProjects = () => {
+  try {
+    const list = projectModel.findOne({ user: req.user._id });
+
+    if (!list) {
+      res.status(400).setCode(234);
+      throw new Error("Cannot find a project");
+    }
+
+    return res.status(200).setCode(343).setPayload(list).respond();
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createProject,
+  listUserProjects,
 };

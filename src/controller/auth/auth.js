@@ -6,8 +6,7 @@ const { validationResult } = require("express-validator");
 
 // Get the use model
 const User = require("../../models/user.model");
-const Package = require("../../models/packages.model");
-const Subscription = require("../../models/subscriptions.model");
+const projectModel = require("../../models/project.model");
 
 // Utils
 const { checkEnglishTestExists } = require("../../utils/tests");
@@ -28,6 +27,16 @@ const login = asyncHandler(async (req, res) => {
 
   if (user && (await bcrypt.compare(password, user.password))) {
     // Create a new API key and default project for the user
+    const createUserProject = await projectModel.create({
+      user: user.id,
+      name: user.email,
+      key: genApiKey(),
+    });
+
+    if (!createUserProject) {
+      res.status(200).setCode(434);
+      throw new Error("Something went wrong");
+    }
 
     res
       .setCode(233)

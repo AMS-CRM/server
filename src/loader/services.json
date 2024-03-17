@@ -3,5 +3,6 @@
   "user": "/user/users.js",
   "countries": "/countries/countries.js",
   "notifications": "/notifications/notifications.js",
-  "projects": "/projects/projects.js"
+  "projects": "/projects/projects.js",
+  "stripe": "/payments/stripe.js"
 }
