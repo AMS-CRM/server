@@ -68,7 +68,7 @@ const createBookingPayments = asyncHandler(async (req, res) => {
     );
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: bookingPaymentDetails.payments.amount * 100,
+      amount: bookingPaymentDetails.payments.remaningBalance * 100,
       currency: "gbp",
       customer: userStripeCustomerId,
       metadata: {
@@ -83,7 +83,6 @@ const createBookingPayments = asyncHandler(async (req, res) => {
       customer: userStripeCustomerId,
       publishableKey: process.env.STRIPE_PUBLIC_KEY,
     };
-    console.log(payload);
     // Return the json customer object
     return res.status(200).setPayload(payload).setCode(832).respond();
   } catch (error) {
