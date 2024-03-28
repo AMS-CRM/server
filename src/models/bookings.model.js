@@ -79,7 +79,6 @@ const bookingSchema = Schema({
     remaningBalance: {
       type: Number,
       required: true,
-      default: 0,
     },
     amountPaid: {
       type: Number,

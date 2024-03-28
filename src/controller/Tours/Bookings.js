@@ -57,6 +57,7 @@ const newBooking = asyncHandler(async (req, res) => {
         status: "In Progress",
         payments: {
           amount,
+          remaningBalance: amount,
           amountPaid: 0,
           status: "Pending",
         },
