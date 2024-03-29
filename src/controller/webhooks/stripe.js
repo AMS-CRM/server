@@ -1,11 +1,18 @@
 const asyncHandler = require("express-async-handler");
-const stripe = require("stripe")(process.env.STRIPE_KEY);
+const stripe = require("stripe")(
+  process.env.NODE_ENV == "production"
+    ? process.env.STRIPE_KEY
+    : process.env.STRIPE_TEST_SECRET
+);
 const recordPayment = require("../../utils/recordPayment");
 // Stripe webhooks to record a payment
 const stripeWebhook = asyncHandler(async (req, res) => {
   try {
     const sig = req.headers["stripe-signature"];
-    const endpointSecret = process.env.STRIPE_WEBHOOKS;
+    const endpointSecret =
+      process.env.NODE_ENV == "production"
+        ? process.env.STRIPE_WEBHOOKS
+        : process.env.STRIPE_TEST_WEBHOOK;
     let event;
 
     try {

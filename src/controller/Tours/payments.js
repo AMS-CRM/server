@@ -1,6 +1,10 @@
 const { validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
-const stripe = require("stripe")(process.env.STRIPE_KEY);
+const stripe = require("stripe")(
+  process.env.NODE_ENV == "production"
+    ? process.env.STRIPE_KEY
+    : process.env.STRIPE_TEST_SECRET
+);
 
 // Get the model
 const BookingModel = require("../../models/bookings.model");
@@ -81,7 +85,10 @@ const createBookingPayments = asyncHandler(async (req, res) => {
       paymentIntent: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customer: userStripeCustomerId,
-      publishableKey: process.env.STRIPE_PUBLIC_KEY,
+      publishableKey:
+        process.env.NODE_ENV == "production"
+          ? process.env.STRIPE_PUBLIC_KEY
+          : STRIPE_TEST_KEY,
     };
     // Return the json customer object
     return res.status(200).setPayload(payload).setCode(832).respond();
