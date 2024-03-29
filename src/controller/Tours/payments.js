@@ -88,7 +88,7 @@ const createBookingPayments = asyncHandler(async (req, res) => {
       publishableKey:
         process.env.NODE_ENV == "production"
           ? process.env.STRIPE_PUBLIC_KEY
-          : STRIPE_TEST_KEY,
+          : process.env.STRIPE_TEST_KEY,
     };
     // Return the json customer object
     return res.status(200).setPayload(payload).setCode(832).respond();
